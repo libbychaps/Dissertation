@@ -12,7 +12,7 @@ library(tidyverse)
 library(Hmisc)
 
 #import dataset
-sheep <- read_excel("LibbyDataSet.xlsx")
+sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
 View(sheep)
 
 #calculating proportion successful in their first year
@@ -315,7 +315,7 @@ sheep$success[sheep$success >0]<- 1            #makes column binary 1/0
   prop18                           #0.071 sheep successful in 2018
   
 #New dataframe for year factors (inc all year factors, made in excel)
-  Years <- read_excel("Years.xlsx")
+  Years <- read_excel("~/University/4th Year/Dissertation/Years.xlsx")
   View(Years)
 
 #add the above values into the years dataframe
@@ -540,14 +540,6 @@ sheep<- sheep %>%
   cor.test(sheep$DeathAge,sheep$LifetimeOffspring,method="pearson")
   #sheep that love longer have more offspring - having offspring does not inc mortality
   
-  p<- ggplot(sheep,aes(LifetimeOffspring,DeathAge))+         #creates base plot
-    geom_point()+                                      #adds points
-    labs(x="LBS",y="Death Age")+              #x and y axis labels
-    theme_grey(base_size=18)+     #gives graph background
-    geom_smooth(data=sheep,aes(x=LifetimeOffspring,y=DeathAge),col="2",lty=2,size=1)           #adds line to graph
-  p   #hmm this looks odd
-   
-  
   #looking at future repro
   plot(LifetimeOffspring~success,data=sheep)
   abline(lm(sheep$LifetimeOffspring~sheep$success),col="red",lwd=3)  
@@ -559,5 +551,35 @@ sheep<- sheep %>%
   cor.test(sheep$LifetimeOffspring,sheep$CountOfFirstRutOffspring,method="pearson")
   #increase in lifetime offspring if they had more offspring in first year
   
-  #installing git
-  
+#lms
+ hist(sheep$DeathAge) #not normally distributed --> poisson?
+ mod13<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                 Weight+LifetimeOffspring*CountOfFirstRutOffspring+
+                 (1|BirthYear),data=sheep,family=poisson) 
+ summary(mod13) #everything significant except first rut offspring 
+ #add (1|DeathYear)
+ mod13.2<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                 Weight+LifetimeOffspring*CountOfFirstRutOffspring+
+                 (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson) 
+ summary(mod13.2) #everything becomes insignificant except lifetime offspring (MAXIMAL MODEL)
+ #remove (1|BirthYear)
+ mod13.3<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                 Weight+LifetimeOffspring*CountOfFirstRutOffspring+
+                 (1|DeathYear),data=sheep,family=poisson)
+ summary(mod13.3)  #weight becomes significant
+ #remove first rut offspring from maximal model
+ mod13.4<- glmer(DeathAge~LifetimeOffspring+Weight+
+                   LifetimeOffspring*CountOfFirstRutOffspring+
+                   (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod13.4) #remove interaction
+ mod13.5<- glmer(DeathAge~LifetimeOffspring+Weight+(1|BirthYear)+(1|DeathYear),
+                 data=sheep,family=poisson)
+ summary(mod13.5) #remove weight
+ mod13.6<- glmer(DeathAge~LifetimeOffspring+(1|BirthYear)+(1|DeathYear),
+                 data=sheep,family=poisson)
+ summary(mod13.6) #becomes insignificant? go back to previous model or carry on?
+ #try removing (1|BirthYear)
+ mod13.7<- glmer(DeathAge~LifetimeOffspring+(1|DeathYear),
+                 data=sheep,family=poisson)
+ summary(mod13.7) #lifetime offspring becomes highly significant again
+ 

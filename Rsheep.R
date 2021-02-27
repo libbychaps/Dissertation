@@ -449,6 +449,12 @@ sheep<- sheep %>%
   #MumKnown not significant
   mod9.3<- glmer(success~VillTotal+(1|BirthYear),data=sheep,family=binomial)
   summary(mod9.3)
+  #try rescaling variables
+  mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod9.4)#gets rid of error, changes result?
+  #remove birth year
+  mod9.5<- glm(success+scale(VillTotal),data=sheep,family=binomial)
+  #says "success" not found?
   
 #Model for horn type and twin status (binary data)
   mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
@@ -459,6 +465,9 @@ sheep<- sheep %>%
   summary(mod10.3)  #ratio least significant
   mod10.4<- glmer(success~SibCount+VillTotal+(1|BirthYear),data=sheep,family=binomial)
   summary(mod10.4)
+  #remove (1|BirthYear)
+  mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
+  summary(mod10.5)  
   
 #Model for Aug catch animals (binary data)
   mod11<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
@@ -489,6 +498,7 @@ sheep<- sheep %>%
   mod11.9<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial) #warning
   mod11.9.2<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
   summary(mod11.9.2) #all terms significant
+ 
   
 #Model for mother known (count data)
   mod12<- lm(CountOfFirstRutOffspring~MumKnown+VillTotal+ratio,data=sheep)
@@ -503,6 +513,64 @@ sheep<- sheep %>%
   sheep<- cbind(sheep,sqrt(sheep$CountOfFirstRutOffspring))
   names(sheep)[names(sheep)=="sqrt(CountOfFirstRutOffspring)"] <- "sqrtFirstRut"
   hist(sheep$`sqrt(sheep$CountOfFirstRutOffspring)`) #also not good
+  
+  #try poisson distributed model (Jon's email)
+  mod12.2<- glm(CountOfFirstRutOffspring~MumKnown+VillTotal+ratio,
+                data=sheep,family=poisson)
+  summary(mod12.2)  #this seems to work
+  #remove MumKnown
+  mod12.3<- glm(CountOfFirstRutOffspring~VillTotal+ratio,
+                data=sheep,family=poisson)
+  summary(mod12.3)
+  #remove ratio
+  mod12.4<- glm(CountOfFirstRutOffspring~VillTotal,
+                data=sheep,family=poisson)
+  summary(mod12.4)
+  
+#Model for horn type and twin status (count data)
+  mod13<- glm(CountOfFirstRutOffspring~Horn+SibCount+VillTotal+MumKnown+ratio,
+               data=sheep,family=poisson)
+  summary(mod13) #remove horn type
+  mod13.2<- glm(CountOfFirstRutOffspring~SibCount+VillTotal+MumKnown+ratio,
+               data=sheep,family=poisson)
+  summary(mod13.2) #remove ratio
+  mod13.3<- glm(CountOfFirstRutOffspring~SibCount+VillTotal+MumKnown,
+                data=sheep,family=poisson)
+  summary(mod13.3) #remove MumKnown
+  mod13.4<- glm(CountOfFirstRutOffspring~SibCount+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod13.4) #SibCount and VillTotal both predict male lamb success
+  
+#Model for Aug catch animals (count data)
+  mod14<- glm(CountOfFirstRutOffspring~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+
+                VillTotal+ratio,data=sheep,family=poisson)
+  summary(mod14) #nothing significant in maximal model
+  #remove Hindleg (least significant)
+  mod14.2<- glm(CountOfFirstRutOffspring~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+
+                VillTotal+ratio,data=sheep,family=poisson)
+  summary(mod14.2) #remove BolLen
+  mod14.3<- glm(CountOfFirstRutOffspring~Weight+Horn+HornLen+HornCirc+BolCirc+SibCount+
+                VillTotal+ratio,data=sheep,family=poisson)
+  summary(mod14.3) #BolCirc and VillTotal become significant
+  #remove SibCount
+  mod14.4<- glm(CountOfFirstRutOffspring~Weight+Horn+HornLen+HornCirc+BolCirc+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod14.4) #weight becomes significant
+  #remove HornLen
+  mod14.5<- glm(CountOfFirstRutOffspring~Weight+Horn+HornCirc+BolCirc+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod14.5) #remove HornCirc
+  mod14.5<- glm(CountOfFirstRutOffspring~Weight+Horn+BolCirc+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod14.5) #remove weight
+  mod14.6<- glm(CountOfFirstRutOffspring~Horn+BolCirc+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod14.6) #remove horn
+  mod14.7<- glm(CountOfFirstRutOffspring~BolCirc+VillTotal,
+                data=sheep,family=poisson)
+  summary(mod14.7) #minimal model
+  #BolCirc and VillTotal influence number of offspring male lambs sire in their first year
+  
   
   ################### ^^^ COME BACK TO THIS ^^^ ###################
   
@@ -552,34 +620,47 @@ sheep<- sheep %>%
   #increase in lifetime offspring if they had more offspring in first year
   
 #lms
+  
+#model Death Age 
  hist(sheep$DeathAge) #not normally distributed --> poisson?
- mod13<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+ mod15<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                  Weight+LifetimeOffspring*CountOfFirstRutOffspring+
                  (1|BirthYear),data=sheep,family=poisson) 
  summary(mod13) #everything significant except first rut offspring 
  #add (1|DeathYear)
- mod13.2<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+ mod15.2<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                  Weight+LifetimeOffspring*CountOfFirstRutOffspring+
                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson) 
- summary(mod13.2) #everything becomes insignificant except lifetime offspring (MAXIMAL MODEL)
+ summary(mod15.2) #everything becomes insignificant except lifetime offspring (MAXIMAL MODEL)
  #remove (1|BirthYear)
- mod13.3<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+ mod15.3<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                  Weight+LifetimeOffspring*CountOfFirstRutOffspring+
                  (1|DeathYear),data=sheep,family=poisson)
- summary(mod13.3)  #weight becomes significant
+ summary(mod15.3)  #weight becomes significant
  #remove first rut offspring from maximal model
- mod13.4<- glmer(DeathAge~LifetimeOffspring+Weight+
+ mod15.4<- glmer(DeathAge~LifetimeOffspring+Weight+
                    LifetimeOffspring*CountOfFirstRutOffspring+
                    (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
- summary(mod13.4) #remove interaction
- mod13.5<- glmer(DeathAge~LifetimeOffspring+Weight+(1|BirthYear)+(1|DeathYear),
+ summary(mod15.4) #remove interaction
+ mod15.5<- glmer(DeathAge~LifetimeOffspring+Weight+(1|BirthYear)+(1|DeathYear),
                  data=sheep,family=poisson)
- summary(mod13.5) #remove weight
- mod13.6<- glmer(DeathAge~LifetimeOffspring+(1|BirthYear)+(1|DeathYear),
+ summary(mod15.5) #remove weight
+ mod15.6<- glmer(DeathAge~LifetimeOffspring+(1|BirthYear)+(1|DeathYear),
                  data=sheep,family=poisson)
- summary(mod13.6) #becomes insignificant? go back to previous model or carry on?
+ summary(mod15.6) #becomes insignificant? go back to previous model or carry on?
  #try removing (1|BirthYear)
- mod13.7<- glmer(DeathAge~LifetimeOffspring+(1|DeathYear),
+ mod15.7<- glmer(DeathAge~LifetimeOffspring+(1|DeathYear),
                  data=sheep,family=poisson)
- summary(mod13.7) #lifetime offspring becomes highly significant again
+ summary(mod15.7) #lifetime offspring becomes highly significant again
+ 
+ 
+#model LBS
+ hist(sheep$LifetimeOffspring) #poisson (or zero inflated?)
+ mod16<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+Weight+
+                 (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod16) #remove success
+ mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+Weight+
+                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod16.2) #minimal model
+ #CountOfFirstRutOffspring and Weight both affect LBS
  

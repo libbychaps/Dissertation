@@ -664,3 +664,20 @@ sheep<- sheep %>%
  summary(mod16.2) #minimal model
  #CountOfFirstRutOffspring and Weight both affect LBS
  
+ 
+###### plotting ######
+#plot model 9.4
+ mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
+ summary(mod9.4)
+ #plot in base R
+ plot(success~VillTotal,data=sheep)
+ abline(lm(sheep$success~sheep$VillTotal),col="red",lwd=3)
+ cor.test(sheep$success,sheep$VillTotal,method="pearson")
+ #plot using ggplot2
+ plot1<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+     geom_point(aes(col=success))+                         #adds data points, diff colours for success/not
+     labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
+     labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
+     geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
+ plot1  #view plot
+ 

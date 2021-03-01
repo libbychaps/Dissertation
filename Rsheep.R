@@ -453,8 +453,8 @@ sheep<- sheep %>%
   mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
   summary(mod9.4)#gets rid of error, changes result?
   #remove birth year
-  mod9.5<- glm(success+scale(VillTotal),data=sheep,family=binomial)
-  #says "success" not found?
+  mod9.5<- glm(success~scale(VillTotal),data=sheep,family=binomial)
+  summary(mod9.5)
   
 #Model for horn type and twin status (binary data)
   mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
@@ -498,7 +498,8 @@ sheep<- sheep %>%
   mod11.9<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial) #warning
   mod11.9.2<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
   summary(mod11.9.2) #all terms significant
- 
+  mod11.10<- glm(success~Weight+VillTotal,data=sheep,family=binomial) #remove BolCirc, keep weight
+  summary(mod11.10) #makes weight significant
   
 #Model for mother known (count data)
   mod12<- lm(CountOfFirstRutOffspring~MumKnown+VillTotal+ratio,data=sheep)
@@ -570,9 +571,6 @@ sheep<- sheep %>%
                 data=sheep,family=poisson)
   summary(mod14.7) #minimal model
   #BolCirc and VillTotal influence number of offspring male lambs sire in their first year
-  
-  
-  ################### ^^^ COME BACK TO THIS ^^^ ###################
   
   
 #LOOKING AT FUTURE SURVIVAL AND REPRO
@@ -656,7 +654,7 @@ sheep<- sheep %>%
  
 #model LBS
  hist(sheep$LifetimeOffspring) #poisson (or zero inflated?)
- mod16<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+Weight+
+ mod16<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+Weight+BolCirc+VillTotal+
                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
  summary(mod16) #remove success
  mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+Weight+

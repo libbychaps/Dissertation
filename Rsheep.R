@@ -656,12 +656,33 @@ sheep<- sheep %>%
  hist(sheep$LifetimeOffspring) #poisson (or zero inflated?)
  mod16<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+Weight+BolCirc+VillTotal+
                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
- summary(mod16) #remove success
- mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+Weight+
+ summary(mod16) #remove Weight
+ mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+BolCirc+VillTotal+
                   (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
- summary(mod16.2) #minimal model
- #CountOfFirstRutOffspring and Weight both affect LBS
+ summary(mod16.2) #remove success
+ mod16.3<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+BolCirc+VillTotal+
+                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod16.3) #try removing (1|BirthYear)
+ mod16.4<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+BolCirc+VillTotal+
+                   (1|DeathYear),data=sheep,family=poisson)
+ summary(mod16.4)  #VillTotal becomes significant when (1|BirthYear) is removed
+ #Weight is significant if BolCirc not included but BolCirc accounts for more than Weight
  
+ #try same model using success rather than count 
+ mod17<- glmer(LifetimeOffspring~success+BolCirc+Weight+VillTotal+
+                 (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod17) #remove weight
+ mod17.2<- glmer(LifetimeOffspring~success+BolCirc+VillTotal+
+                 (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod17.2) 
+ #try removing BolCirc instead
+ mod17.3<- glmer(LifetimeOffspring~success+Weight+VillTotal+
+                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
+ summary(mod17.3)
+ #remove (1|BirthYear)
+ mod17.4<- glmer(LifetimeOffspring~success+BolCirc+VillTotal+
+                   (1|DeathYear),data=sheep,family=poisson)
+ summary(mod17.4)
  
 ###### plotting ######
 #plot model 9.4

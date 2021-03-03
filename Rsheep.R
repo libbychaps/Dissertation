@@ -10,6 +10,7 @@ library(dplyr)
 library(readxl)
 library(tidyverse)
 library(Hmisc)
+library(performance)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -455,6 +456,8 @@ sheep<- sheep %>%
   #remove birth year
   mod9.5<- glm(success~scale(VillTotal),data=sheep,family=binomial)
   summary(mod9.5)
+  #check model performance
+  model_performance(mod9) #unsure what this tells us
   
 #Model for horn type and twin status (binary data)
   mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
@@ -467,7 +470,7 @@ sheep<- sheep %>%
   summary(mod10.4)
   #remove (1|BirthYear)
   mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
-  summary(mod10.5)  
+  summary(mod10.5) 
   
 #Model for Aug catch animals (binary data)
   mod11<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
@@ -495,8 +498,7 @@ sheep<- sheep %>%
   mod11.8.2<- glm(success~Weight+BolCirc+VillTotal,data=sheep,family=binomial) #removing random term gets rid of the warning message?
   summary(mod11.8) #weight is least significant
   summary(mod11.8.2) #weight also insignificant
-  mod11.9<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial) #warning
-  mod11.9.2<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
+  mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
   summary(mod11.9.2) #all terms significant
   mod11.10<- glm(success~Weight+VillTotal,data=sheep,family=binomial) #remove BolCirc, keep weight
   summary(mod11.10) #makes weight significant
@@ -571,6 +573,37 @@ sheep<- sheep %>%
                 data=sheep,family=poisson)
   summary(mod14.7) #minimal model
   #BolCirc and VillTotal influence number of offspring male lambs sire in their first year
+  
+  #re-do mod11 but include (1|MumID)
+  mod18<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
+                  ratio+(1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18) #nothing significant
+  #remove Hindleg
+  mod18.2<- glmer(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
+                    ratio+(1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.2) #remove Horn
+  mod18.3<- glmer(success~HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+ratio+
+                    (1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.3) #remove BolLen
+  mod18.4<- glmer(success~HornLen+HornCirc+BolCirc+SibCount+VillTotal+
+                    (1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.4) #remove HornLen
+  mod18.5<- glmer(success~HornCirc+BolCirc+SibCount+VillTotal+ratio+
+                    (1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.5) #remove ratio
+  mod18.6<- glmer(success~HornCirc+BolCirc+SibCount+VillTotal+
+                    (1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.6) #remove HornCirc
+  mod18.7<- glmer(success~BolCirc+SibCount+VillTotal+
+                    (1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.7) #remove SibCount
+  mod18.8<- glmer(success~BolCirc+VillTotal+(1|BirthYear)+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.8)
+  #remove (1|BirthYear)
+  mod18.9<- glmer(success~BolCirc+VillTotal+(1|MumID),data=sheep,family=binomial)
+  summary(mod18.9)
+  
+  
   
   
 #LOOKING AT FUTURE SURVIVAL AND REPRO
@@ -699,4 +732,38 @@ sheep<- sheep %>%
      labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
      geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
  plot1  #view plot
+ 
+ #plotting mod10.5
+ mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
+ summary(mod10.5)  
+ #would be 2 lines (singleton, twin) if there was an interaction
+ #no interaction so one line but colour points based on sib count
+ #plot in base R
+ plot(success~VillTotal,data=sheep,col=as.factor(SibCount)) #red twins, black single
+ #plot using ggplot2
+ plot2<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+   geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
+   labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
+   labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
+   geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
+ plot2  #view plot
+ 
+ #plot mod13 (same as 10 but count data)
+ mod13.4<- glm(CountOfFirstRutOffspring~SibCount+VillTotal,
+               data=sheep,family=poisson)
+ summary(mod13.4)
+ #plot in base R
+ plot(CountOfFirstRutOffspring~VillTotal,data=sheep,col=as.factor(SibCount))
+ #plot with ggplot2
+ plot2<- ggplot(sheep,aes(VillTotal,CountOfFirstRutOffspring))+             #creates base plot
+   geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
+   labs(x="Total Village Population",y="First Year Offspring")+     #adds labels to X and Y axes
+   labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
+   geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
+ plot2  #view plot
+ 
+ #plot mod11
+ mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
+ summary(mod11.9)
+ #should I do a 3d plot for this??
  

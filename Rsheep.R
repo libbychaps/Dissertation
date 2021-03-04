@@ -624,6 +624,23 @@ sheep<- sheep %>%
   sheep<- sheep %>% 
     mutate(DeathAge = DeathYear-BirthYear)
   
+  #create binary column if died in first year
+  sheep<- sheep %>%
+    mutate(DiedFirstYear = case_when(DeathAge == 1 ~ "1",   #gives 1 to all individuals that died in their first year
+                                     DeathAge >= 2 ~ "0"))  #gives 0 to all individuals that survived their first year
+  sheep$DiedFirstYear<-as.numeric(sheep$DiedFirstYear)
+  str(sheep$DiedFirstYear)
+  
+  plot(DiedFirstYear~success,data=sheep)
+  abline(lm(sheep$DiedFirstYear~sheep$success),col="red",lwd=3)
+  cor.test(sheep$DiedFirstYear,sheep$success,method="pearson")
+  #cor.test doesnt work but line indicates success causes death in 1st year
+  
+  plot(DiedFirstYear~CountOfFirstRutOffspring,data=sheep)
+  abline(lm(sheep$DiedFirstYear~sheep$CountOfFirstRutOffspring),col="red",lwd=3)
+  cor.test(sheep$DiedFirstYear,sheep$CountOfFirstRutOffspring,method="pearson")
+  #cor.test not working but steep decline in survival if they have >1 offspring
+  
   plot(DeathAge~success,data=sheep)    
   abline(lm(sheep$DeathAge~sheep$success),col="red",lwd=3)   
   cor.test(sheep$DeathAge,sheep$success,method="pearson")
@@ -683,13 +700,22 @@ sheep<- sheep %>%
  mod15.7<- glmer(DeathAge~LifetimeOffspring+(1|DeathYear),
                  data=sheep,family=poisson)
  summary(mod15.7) #lifetime offspring becomes highly significant again
- 
+ mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
+ summary(mod15.8)
  
 #model LBS
  hist(sheep$LifetimeOffspring) #poisson (or zero inflated?)
+ #try adjusting the bins
+ hist(sheep$LifetimeOffspring, breaks = 10) #original hist
+ hist(sheep$LifetimeOffspring, breaks = 20) #splits values
+ hist(sheep$LifetimeOffspring, breaks = 60) #looks zero inflated?
+ #looking at the data there are lots of zeros and 1s, two individuals over 100
  mod16<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+Weight+BolCirc+VillTotal+
                  (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
- summary(mod16) #remove Weight
+ summary(mod16) 
+ #check for zero inflation
+ check_zeroinflation(mod16) #probable zero inflation --> only look at binary?
+ #remove Weight
  mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+BolCirc+VillTotal+
                   (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
  summary(mod16.2) #remove success
@@ -716,6 +742,22 @@ sheep<- sheep %>%
  mod17.4<- glmer(LifetimeOffspring~success+BolCirc+VillTotal+
                    (1|DeathYear),data=sheep,family=poisson)
  summary(mod17.4)
+ 
+#modelling survival of first year
+ mod19<- glmer(DiedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
+                 Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+ summary(mod19) #remove SibCount
+ mod19.2<- glmer(DiedFirstYear~success+Weight+BolCirc+VillTotal+Weight*VillTotal+
+                 (1|BirthYear),data=sheep,family=binomial)
+ summary(mod19.2) #everything significant
+ 
+ #mod20 same as 19 but count data
+ mod20<- glmer(DiedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+
+                 Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+ summary(mod20) #remove BolCirc
+ mod20.2<- glmer(DiedFirstYear~CountOfFirstRutOffspring+Weight+VillTotal+SibCount+
+                   Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+ summary(mod20.2)
  
 ###### plotting ######
 #plot model 9.4

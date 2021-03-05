@@ -743,6 +743,9 @@ sheep<- sheep %>%
  mod17.4<- glmer(LifetimeOffspring~success+BolCirc+VillTotal+
                    (1|DeathYear),data=sheep,family=poisson)
  summary(mod17.4)
+ mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
+                 data=sheep,family=poisson)
+ summary(mod17.5) #all significant
  
 #modelling survival of first year
  mod19<- glmer(DiedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
@@ -836,4 +839,33 @@ sheep<- sheep %>%
  plot4
  #plot side by side
  plot3 + plot4
+ 
+ #plot mod17
+ mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
+               data=sheep,family=poisson)
+ summary(mod17.5)
+ #plot success
+ plot5<- ggplot(sheep,aes(success,LifetimeOffspring))+
+   geom_point()+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+   theme_classic(base_size=18)
+ plot5  #this seems wrong
+ #plot Weight
+ plot6<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
+   geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
+   theme_classic(base_size=18)
+ plot6
+ #plot BolCirc
+ plot7<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
+   geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
+   theme_classic(base_size=18)
+ plot7
+ #plot VillTotal
+ plot8<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
+   geom_point(col="slateblue4")+geom_smooth(method=lm,se=FALSE,col="steelblue1")+
+   theme_classic(base_size=18)
+ plot8
+ #put together into panel
+ (plot5+plot6)/(plot7+plot8) #all have very small effect sizes, worth including?
+ 
+ 
  

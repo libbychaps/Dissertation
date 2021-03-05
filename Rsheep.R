@@ -11,6 +11,7 @@ library(readxl)
 library(tidyverse)
 library(Hmisc)
 library(performance)
+library(patchwork)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -805,7 +806,34 @@ sheep<- sheep %>%
  plot2  #view plot
  
  #plot mod11
- mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
+ mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
  summary(mod11.9)
- #should I do a 3d plot for this??
+ #plotting (Claudia's code)
+ par(mfrow=c(1,2)) #plots appear side by side
+ #first variable (VillTotal)
+ x1<- seq(0,700,100)  #specifying range and scale of x axis
+ y1<- predict(mod11.9,list(VillTotal=x1),type="response") #specify model and first continuous variable
+ plot(success~VillTotal,data=sheep)
+ lines(x1,y1,col="red")
+ #second variable (BolCirc)
+ x2<- seq(0,300,50)
+ y2<- predict(mod11.9,list(BolCirc=x2),type="response") 
+ plot(success~BolCirc,data=sheep)
+ lines(x2,y2,col="red") 
+ par(mfrow=c(1,1)) #putting plots back to 1,1 for future plotting
+ ###lines not working###
+ 
+ #try in ggplot2 (using patchwork package to put side by side)
+ #plot VillTotal
+ plot3<- ggplot(sheep,aes(VillTotal,success))+
+   geom_point(col="steelblue1")+geom_smooth(method=NULL,se=FALSE,col="slateblue4")+
+   theme_classic(base_size=18)
+ plot3 
+ #plot BolCirc
+ plot4<- ggplot(sheep,aes(BolCirc,success))+
+   geom_point(col="steelblue1")+geom_smooth(method=NULL,se=FALSE,col="slateblue4")+
+   theme_classic(base_size=18)
+ plot4
+ #plot side by side
+ plot3 + plot4
  

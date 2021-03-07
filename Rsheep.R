@@ -458,7 +458,9 @@ sheep<- sheep %>%
   mod9.5<- glm(success~scale(VillTotal),data=sheep,family=binomial)
   summary(mod9.5)
   #check model performance
-  model_performance(mod9) #unsure what this tells us
+  model_performance(mod9.5) #unsure what this tells us
+  #check r2
+  r2(mod9.5)
   
 #Model for horn type and twin status (binary data)
   mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
@@ -475,34 +477,52 @@ sheep<- sheep %>%
   
 #Model for Aug catch animals (binary data)
   mod11<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
-                  ratio+(1|BirthYear),data=sheep,family=binomial)
+                  ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
   summary(mod11)   #none significant - remove terms one at a time (first HindLeg)
   mod11.2<- glmer(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
-                  ratio+(1|BirthYear),data=sheep,family=binomial)
+                  ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
   summary(mod11.2) #Horn least significant
   mod11.3<- glmer(success~Weight+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
-                  ratio+(1|BirthYear),data=sheep,family=binomial)
+                  ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
   summary(mod11.3) #BolLen least significant
   mod11.4<- glmer(success~Weight+HornLen+HornCirc+BolCirc+SibCount+VillTotal+
-                  ratio+(1|BirthYear),data=sheep,family=binomial)
-  summary(mod11.4) #VillTotal becomes significant, HornCirc least significant
+                  ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.4) #HornCirc least significant
   mod11.5<- glmer(success~Weight+HornLen+BolCirc+SibCount+VillTotal+
-                  ratio+(1|BirthYear),data=sheep,family=binomial)
-  summary(mod11.5) #BolCirc becomes significant, ratio least significant
-  mod11.6<- glmer(success~Weight+HornLen+BolCirc+SibCount+VillTotal+
-                  (1|BirthYear),data=sheep,family=binomial)
-  summary(mod11.6) #HornLen least significant
-  mod11.7<- glmer(success~Weight+BolCirc+SibCount+VillTotal+
-                  (1|BirthYear),data=sheep,family=binomial)
-  summary(mod11.7) #BolCirc no longer significant? SibCount least significant
-  mod11.8<- glmer(success~Weight+BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial)
-  mod11.8.2<- glm(success~Weight+BolCirc+VillTotal,data=sheep,family=binomial) #removing random term gets rid of the warning message?
-  summary(mod11.8) #weight is least significant
-  summary(mod11.8.2) #weight also insignificant
-  mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
-  summary(mod11.9.2) #all terms significant
-  mod11.10<- glm(success~Weight+VillTotal,data=sheep,family=binomial) #remove BolCirc, keep weight
-  summary(mod11.10) #makes weight significant
+                  ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.5) #BolCirc becomes significant, Weight least significant
+  mod11.6<- glmer(success~HornLen+BolCirc+SibCount+VillTotal+ratio+
+                  Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.6) #remove ratio
+  mod11.7<- glmer(success~HornLen+BolCirc+SibCount+VillTotal+Weight+Weight*VillTotal+
+                    (1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.7) #remove HornLen
+  mod11.8<- glmer(success~BolCirc+SibCount+VillTotal+Weight+Weight*VillTotal+
+                    (1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.8) #remove SibCount
+  mod11.9<- glmer(success~BolCirc+VillTotal+Weight+Weight*VillTotal+
+                    (1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.9) #remove interaction
+  mod11.10<- glmer(success~BolCirc+VillTotal+Weight+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.10)   #remove weight
+  mod11.11<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod11.11) #minimal model
+  #including an interaction does not change minimal model
+  
+  
+  #repeat this model using an interaction between VillTotal and BolCirc
+  mod19<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
+                  ratio+BolCirc*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod19) #remove Hindleg
+  mod19.2<- glmer(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
+                  ratio+BolCirc*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod19.2) #BolCirc least significant, but keep for interaction
+  #remove Horn
+  mod19.3<- glmer(success~Weight+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+ratio+
+                  BolCirc*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod19.3) #remove interaction
+  #so this becomes the same as mod11 again
+  
   
 #Model for mother known (count data)
   mod12<- lm(CountOfFirstRutOffspring~MumKnown+VillTotal+ratio,data=sheep)
@@ -635,12 +655,12 @@ sheep<- sheep %>%
   plot(DiedFirstYear~success,data=sheep)
   abline(lm(sheep$DiedFirstYear~sheep$success),col="red",lwd=3)
   cor.test(sheep$DiedFirstYear,sheep$success,method="pearson")
-  #cor.test doesnt work but line indicates success causes death in 1st year
+  #success causes death in 1st year
   
   plot(DiedFirstYear~CountOfFirstRutOffspring,data=sheep)
   abline(lm(sheep$DiedFirstYear~sheep$CountOfFirstRutOffspring),col="red",lwd=3)
   cor.test(sheep$DiedFirstYear,sheep$CountOfFirstRutOffspring,method="pearson")
-  #cor.test not working but steep decline in survival if they have >1 offspring
+  #steep decline in survival if they have >1 offspring
   
   plot(DeathAge~success,data=sheep)    
   abline(lm(sheep$DeathAge~sheep$success),col="red",lwd=3)   
@@ -868,4 +888,35 @@ sheep<- sheep %>%
  (plot5+plot6)/(plot7+plot8) #all have very small effect sizes, worth including?
  
  
+### extra correlations ###
+ #hindleg and weight
+ plot(Hindleg~Weight,data=sheep)
+ abline(lm(sheep$Hindleg~sheep$Weight),col="red",lwd=3)
+ cor.test(sheep$Hindleg,sheep$Weight,method="pearson")
  
+ #BolCirc and Weight
+ plot(BolCirc~Weight,data=sheep)
+ abline(lm(sheep$BolCirc~sheep$Weight),col="red",lwd=3) 
+ cor.test(sheep$Hindleg,sheep$Weight,method="pearson") 
+ 
+ #Birth weight and Aug weight
+ plot(BirthWt~Weight,data=sheep)
+ abline(lm(sheep$BirthWt~sheep$Weight),col="red",lwd=3) 
+ 
+ #BolCirc and LBS
+ plot(LifetimeOffspring~BolCirc,data=sheep)
+ abline(lm(sheep$LifetimeOffspring~sheep$BolCirc),col="red",lwd=3) 
+
+ #BolCirc and 1st year success
+ plot(success~BolCirc,data=sheep)
+ abline(lm(sheep$success~sheep$BolCirc),col="red",lwd=3) 
+ 
+ #LBS and success
+ plot(LifetimeOffspring~success,data=sheep)
+ abline(lm(sheep$LifetimeOffspring~sheep$success),col="red",lwd=3) 
+ #the most successful individuals did not have offspring in their first year 
+ 
+ #BolCirc and Hindleg
+ plot(BolCirc~Hindleg,data=sheep)
+ abline(lm(sheep$BolCirc~sheep$Hindleg),col="red",lwd=3) 
+  

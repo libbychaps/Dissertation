@@ -647,20 +647,27 @@ sheep<- sheep %>%
   
   #create binary column if died in first year
   sheep<- sheep %>%
-    mutate(DiedFirstYear = case_when(DeathAge == 1 ~ "1",   #gives 1 to all individuals that died in their first year
-                                     DeathAge >= 2 ~ "0"))  #gives 0 to all individuals that survived their first year
-  sheep$DiedFirstYear<-as.numeric(sheep$DiedFirstYear)
-  str(sheep$DiedFirstYear)
+    mutate(SurvivedFirstYear = case_when(DeathAge == 1 ~ "0",   #gives 0 to all individuals that died in their first year
+                                         DeathAge >= 2 ~ "1"))  #gives 1 to all individuals that survived their first year
+  str(sheep$SurvivedFirstYear)
+  sheep$SurvivedFirstYear<-as.numeric(sheep$SurvivedFirstYear)  #format as number
+  str(sheep$SurvivedFirstYear)
   
-  plot(DiedFirstYear~success,data=sheep)
-  abline(lm(sheep$DiedFirstYear~sheep$success),col="red",lwd=3)
-  cor.test(sheep$DiedFirstYear,sheep$success,method="pearson")
-  #success causes death in 1st year
+  plot(SurvivedFirstYear~success,data=sheep)
+  abline(lm(sheep$SurvivedFirstYear~sheep$success),col="red",lwd=3)
+  cor.test(sheep$SurvivedFirstYear,sheep$success,method="pearson")
+  #success positively correlated with first year survival
+  #those that were successful in first year, survived
   
-  plot(DiedFirstYear~CountOfFirstRutOffspring,data=sheep)
-  abline(lm(sheep$DiedFirstYear~sheep$CountOfFirstRutOffspring),col="red",lwd=3)
-  cor.test(sheep$DiedFirstYear,sheep$CountOfFirstRutOffspring,method="pearson")
-  #steep decline in survival if they have >1 offspring
+  plot(SurvivedFirstYear~CountOfFirstRutOffspring,data=sheep)
+  abline(lm(sheep$SurvivedFirstYear~sheep$CountOfFirstRutOffspring),col="red",lwd=3)
+  cor.test(sheep$SurvivedFirstYear,sheep$CountOfFirstRutOffspring,method="pearson")
+  #increased survival with more offspring
+  
+  plot(SurvivedFirstYear~Weight,data=sheep)
+  abline(lm(sheep$SurvivedFirstYear~sheep$Weight),col="red",lwd=3)
+  cor.test(sheep$SurvivedFirstYear,sheep$Weight,method="pearson")
+  #increased survival if heavier
   
   plot(DeathAge~success,data=sheep)    
   abline(lm(sheep$DeathAge~sheep$success),col="red",lwd=3)   
@@ -768,20 +775,30 @@ sheep<- sheep %>%
  summary(mod17.5) #all significant
  
 #modelling survival of first year
- mod19<- glmer(DiedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
-                 Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+ mod19<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
+                 Weight*VillTotal,data=sheep,family=binomial)
  summary(mod19) #remove SibCount
- mod19.2<- glmer(DiedFirstYear~success+Weight+BolCirc+VillTotal+Weight*VillTotal+
-                 (1|BirthYear),data=sheep,family=binomial)
- summary(mod19.2) #everything significant
+ mod19.2<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
+                 Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod19.2) #weight least sig but keep for interaction, remove BolCirc
+ mod19.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+                 Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod19.3)
+ #success increases survival
+ #weight decreases survival
+ #VillTotal decreases survival
+ 
  
  #mod20 same as 19 but count data
- mod20<- glmer(DiedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+
-                 Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
- summary(mod20) #remove BolCirc
- mod20.2<- glmer(DiedFirstYear~CountOfFirstRutOffspring+Weight+VillTotal+SibCount+
-                   Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
- summary(mod20.2)
+ mod20<- glm(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+
+                 Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod20) #remove SibCount
+ mod20.2<- glmer(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+
+                   Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod20.2) #remove BolCirc
+ mod20.3<- glm(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+VillTotal+
+                 Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod20.3)
  
 ###### plotting ######
 #plot model 9.4
@@ -849,12 +866,12 @@ sheep<- sheep %>%
  #try in ggplot2 (using patchwork package to put side by side)
  #plot VillTotal
  plot3<- ggplot(sheep,aes(VillTotal,success))+
-   geom_point(col="steelblue1")+geom_smooth(method=NULL,se=FALSE,col="slateblue4")+
+   geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
    theme_classic(base_size=18)
  plot3 
  #plot BolCirc
  plot4<- ggplot(sheep,aes(BolCirc,success))+
-   geom_point(col="steelblue1")+geom_smooth(method=NULL,se=FALSE,col="slateblue4")+
+   geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
    theme_classic(base_size=18)
  plot4
  #plot side by side

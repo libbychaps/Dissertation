@@ -784,6 +784,8 @@ sheep<- sheep %>%
  mod19.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                  Weight*VillTotal,data=sheep,family=binomial)
  summary(mod19.3)
+ mod19.4<- glm(SurvivedFirstYear~success+Weight+VillTotal,data=sheep,family=binomial)
+ summary(mod19.4)
  #success increases survival
  #weight decreases survival
  #VillTotal decreases survival

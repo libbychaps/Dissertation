@@ -12,6 +12,8 @@ library(tidyverse)
 library(Hmisc)
 library(performance)
 library(patchwork)
+library(scatterplot3d)
+library(plotly)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -775,17 +777,17 @@ sheep<- sheep %>%
  summary(mod17.5) #all significant
  
 #modelling survival of first year
- mod19<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
+ mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
                  Weight*VillTotal,data=sheep,family=binomial)
- summary(mod19) #remove SibCount
- mod19.2<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
+ summary(mod21) #remove SibCount
+ mod21.2<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
                  Weight*VillTotal,data=sheep,family=binomial)
- summary(mod19.2) #weight least sig but keep for interaction, remove BolCirc
- mod19.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+ summary(mod21.2) #weight least sig but keep for interaction, remove BolCirc
+ mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                  Weight*VillTotal,data=sheep,family=binomial)
- summary(mod19.3)
- mod19.4<- glm(SurvivedFirstYear~success+Weight+VillTotal,data=sheep,family=binomial)
- summary(mod19.4)
+ summary(mod21.3)
+ mod21.4<- glm(SurvivedFirstYear~success+Weight+VillTotal,data=sheep,family=binomial)
+ summary(mod21.4)
  #success increases survival
  #weight decreases survival
  #VillTotal decreases survival
@@ -939,9 +941,29 @@ sheep<- sheep %>%
  plot(BolCirc~Hindleg,data=sheep)
  abline(lm(sheep$BolCirc~sheep$Hindleg),col="red",lwd=3) 
  
+#------------3d plot--------------------
+ mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+                 Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod21.3)
+ 
+ # X variable: Weight
+ # Y variable: SurvivedFirstYear
+ # Z variable: VillTotal
+ 
+ # basic 3-D scatterplot (package scatterplot3d)
+ <- with(sheep, {scatterplot3d(x = sheep$Weight,
+                 y = sheep$VillTotal, 
+                 z = sheep$SurvivedFirstYear,
+                 main="3-D Scatterplot Example 1")})
+ 
+ #plotly package
+ #make matrix manuallly that contains data for plane
  
  
-## --------- 3d plot code from Phoebe ---------- ##
+ 
+ 
+
+ ## --------- 3d plot code from Phoebe ---------- ##
  
  # X var: wh, willowherb (number of willowherb stems)
  # Y var: hb, balsam (number of balsam stems)

@@ -938,4 +938,40 @@ sheep<- sheep %>%
  #BolCirc and Hindleg
  plot(BolCirc~Hindleg,data=sheep)
  abline(lm(sheep$BolCirc~sheep$Hindleg),col="red",lwd=3) 
+ 
+ 
+ 
+## --------- 3d plot code from Phoebe ---------- ##
+ 
+ # X var: wh, willowherb (number of willowherb stems)
+ # Y var: hb, balsam (number of balsam stems)
+ # Z var: pnum (pod number)
+ 
+ # Setting plot ranges... 
+ willowherb<-seq(min(stemalt$wh),max(stemalt$wh),1)
+ balsam<-seq(min(stemalt$hb),max(stemalt$hb),1)
+ 
+ 
+ # The function (equation) with my coefficients (cf1)...
+ sfun<-function(c,d) {exp(cf1[1]+(cf1[2]*c)+(cf1[3]*d))+(cf1[4]*c*d)}
+ 
+ 
+ # Basically returning the numbers for the function "sfun"...
+ pnum<-outer(willowherb,balsam,FUN="sfun")
+ pnum[pnum<0]<-0
+ 
+ #Setting the view...
+ par(mfrow=c(1,1))
+ 
+ #Formatting...
+ res<-persp(willowherb,balsam,pnum, theta = 30, phi = 30, expand = 0.5, col = "lightblue",ticktype = "detailed",
+            xlab="Number of Willowherb Stems",zlab="Pod Number",ylab="Number of Himalayan Balsam Stems")
+ 
+ # Persp = Perspective
+ # "theta = "and "phi = " change your perspective - mess around with them
+ 
+ 
+ # Adding points...
+ mypoints <- trans3d(stemalt$wh, stemalt$hb, stemalt$pods, pmat=res)
+ points(mypoints, pch=21, col="dark grey", bg='lightgrey')
   

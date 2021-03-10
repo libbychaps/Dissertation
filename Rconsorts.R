@@ -38,9 +38,55 @@ View(consorts)
   PropCon2 = (NumConFirstYear2/9346)  #proportion of obs that were first year males 
   PropCon2  #0.03573721 (~3.6%) 
 
-  #Merging data sets  (code from Monica)
-  data_with_block_means <- merge(density_data_limited, 
-                                 block_density_means,
-                                 by=c("year","block"))
+# 3. Merging data sets 
+  #rename ID column so both data frames match
+  consorts2 <- consorts2 %>% 
+    rename(ID = TupID)          #renames TupID column to ID
   
-  new_df <- merge(main_df, small_df, by="column with the same factors")
+  merged<- merge(sheep,consorts2,         #select df to merge
+                 by="ID",                 #merge by common column
+                 all.x=TRUE, all.y=TRUE)  #keep all rows of both data frames
+  View(merged)
+  
+#4. Basic correlations
+  #correlation between success and consort in first year
+  plot(success~ConFirstYear,data=merged)
+  abline(lm(merged$success~merged$ConFirstYear),col="red",lwd=3) 
+  cor.test(merged$success,merged$ConFirstYear,method="pearson") 
+  #no effect of consort on first year success
+  
+  #correlation between weight and consort in first year
+  plot(ConFirstYear~Weight,data=merged)
+  abline(lm(merged$ConFirstYear~merged$Weight),col="red",lwd=3)
+  cor.test(merged$ConFirstYear,merged$Weight,method="pearson")  
+  #appear in the rut less if they are heavier - good quality afford to wait a year?
+  
+  #correlation between BolCirc and consort
+  plot(ConFirstYear~BolCirc,data=merged)
+  abline(lm(merged$ConFirstYear~merged$BolCirc),col="red",lwd=3)  
+  cor.test(merged$ConFirstYear,merged$BolCirc,method="pearson")
+  #BolCirc does not influence appearance in rut
+  
+  #correlation between horn and consort
+  plot(ConFirstYear~Horn,data=merged)
+  abline(lm(merged$ConFirstYear~merged$Horn),col="red",lwd=3)  
+  cor.test(merged$ConFirstYear,merged$Horn,method="pearson")  
+  #horn type does not affect appearance in rut
+  
+  #correlation between sib count and consort
+  plot(ConFirstYear~SibCount,data=merged)
+  abline(lm(merged$ConFirstYear~merged$SibCount),col="red",lwd=3)
+  cor.test(merged$ConFirstYear,merged$SibCount,method="pearson")  
+  #sib count does not affect appearance in rut  
+  
+  #correlation between VillTotal and consort
+  plot(ConFirstYear~VillTotal,data=merged)
+  abline(lm(merged$ConFirstYear~merged$VillTotal),col="red",lwd=3)
+  cor.test(merged$ConFirstYear,merged$VillTotal,method="pearson")  
+  #population has no affect on appearance in rut
+  
+  #correlation between ratio and consort
+  plot(ConFirstYear~ratio,data=merged)
+  abline(lm(merged$ConFirstYear~merged$ratio),col="red",lwd=3)  
+  cor.test(merged$ConFirstYear,merged$ratio,method="pearson")  
+  #increase in first year consorts with inc female:male ratio  

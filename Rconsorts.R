@@ -10,24 +10,16 @@ View(consorts)
 
   #create binary column for consort first year consort
   consorts<- consorts %>%
-    mutate(ConFirstYear = case_when(ConAge == 0 ~ "1",   #gives 1 to consorts held by ram lambs
-                                    ConAge >= 1 ~ "0"))  #gives 0 to consorts held by adult rams
-
-########this should be converted to numeric but not letting me
+    mutate(ConFirstYear = case_when(ConAge == 0 ~ 1,   #gives 1 to consorts held by ram lambs
+                                    ConAge >= 1 ~ 0))  #gives 0 to consorts held by adult rams
+  str(consorts$ConFirstYear)  #checkthis is formatted as num
   
-  NumConFirstYear<- length(consorts$ConFirstYear[consorts$ConFirstYear == 1]) #count first year consorts
-  NumConFirstYear #2260 consorts held by first year rams (THIS IS WRONG)
+  #counting number of consorts held by first year rams
+  NumConFirstYear<- table(consorts$ConFirstYear)[names(table(consorts$ConFirstYear)) == 1] #count first year consorts
+  NumConFirstYear #333 consorts held by first year rams 
   nrow(consorts)  #11273 total consort obs
   PropCon = (NumConFirstYear/11273)  #proportion of obs that were first year males 
-  PropCon   #0.200479 (20%)
-  
-  #another way to check this
-  df1<- consorts[consorts$ConFirstYear == 1, ]  #subsets all data for first year consorts
-  View(df1)  
-  NumConFirstYear<- length(df1$ConFirstYear[df1$ConFirstYear==1])  #counts all first year consorts 
-  NumConFirstYear
-  propCon = (NumConFirstYear/11273)
-  propCon 
+  PropCon   #0.02953961 (~2.9%)
   
 # 2. Create new data set, deleting entries where male age unknown
   consorts2<- data.frame(consorts) #replicated df
@@ -44,16 +36,7 @@ View(consorts)
   NumConFirstYear2  #333 obs of first year consorts
   nrow(consorts2)  #9346 total consort obs
   PropCon2 = (NumConFirstYear2/9346)  #proportion of obs that were first year males 
-  PropCon2  #3.5% 
-  
-  #check this
-  df2<- consorts2[consorts2$ConFirstYear == 1, ]  #subsets all data for first year consorts
-  View(df2)  
-  NumConFirstYear2<- length(df2$ConFirstYear[df2$ConFirstYear==1])  #counts all first year consorts 
-  NumConFirstYear2
-  propCon2 = (NumConFirstYear2/9346)
-  propCon2 
-  
+  PropCon2  #0.03573721 (~3.6%) 
 
   #Merging data sets  (code from Monica)
   data_with_block_means <- merge(density_data_limited, 

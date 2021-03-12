@@ -89,4 +89,7 @@ View(consorts)
   plot(ConFirstYear~ratio,data=merged)
   abline(lm(merged$ConFirstYear~merged$ratio),col="red",lwd=3)  
   cor.test(merged$ConFirstYear,merged$ratio,method="pearson")  
-  #increase in first year consorts with inc female:male ratio  
+  #increase in first year consorts with inc female:male ratio
+  
+  
+  

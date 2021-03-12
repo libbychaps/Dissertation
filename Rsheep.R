@@ -14,6 +14,8 @@ library(performance)
 library(patchwork)
 library(scatterplot3d)
 library(plotly)
+library(see)
+library(qqplotr)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -378,8 +380,7 @@ cor.test(Years$VillTotal,Years$AdultRatio,method="pearson")
 
 #initial modelling
   #model for success (1/0)
-  #create general linear mixed model with binomial data 
-  plot(sheep$success~sheep$Weight)
+  #create generalised linear model with binomial data 
   mod1<- glm(success~Weight,data=sheep,family=binomial)
   summary(mod1)
 
@@ -396,8 +397,11 @@ cor.test(Years$VillTotal,Years$AdultRatio,method="pearson")
 
   mod4<- glmer(success~VillTotal+SibCount+Horn+(1|BirthYear),data=sheep,family=binomial)
   summary(mod4)
-  #density, sib status and horn as fixed effects, birth year random
-
+  mod4.2<- glmer(success~VillTotal+SibCount+(1|BirthYear),data=sheep,family=binomial)
+  summary(mod4.2)
+  mod4.3<- glm(success~VillTotal+SibCount,data=sheep,family=binomial)
+  summary(mod4.3)
+  
   #interaction between weight and horn type?
   mod5<- glm(success~Weight+Horn+Weight*Horn, data=sheep, family=binomial)
   summary(mod5)
@@ -459,10 +463,13 @@ sheep<- sheep %>%
   #remove birth year
   mod9.5<- glm(success~scale(VillTotal),data=sheep,family=binomial)
   summary(mod9.5)
+  mod9.6<- glm(success~VillTotal,data=sheep,family=binomial)
+  summary(mod9.6)
   #check model performance
   model_performance(mod9.5) #unsure what this tells us
   #check r2
   r2(mod9.5)
+  check_model(mod9.5)
   
 #Model for horn type and twin status (binary data)
   mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
@@ -476,6 +483,7 @@ sheep<- sheep %>%
   #remove (1|BirthYear)
   mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
   summary(mod10.5) 
+  check_model(mod10.5)
   
 #Model for Aug catch animals (binary data)
   mod11<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
@@ -508,7 +516,9 @@ sheep<- sheep %>%
   mod11.10<- glmer(success~BolCirc+VillTotal+Weight+(1|BirthYear),data=sheep,family=binomial)
   summary(mod11.10)   #remove weight
   mod11.11<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial)
-  summary(mod11.11) #minimal model
+  summary(mod11.11) #remove (1|BirthYear)
+  mod11.12<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
+  summary(mod11.12)
   #including an interaction does not change minimal model
   
   
@@ -959,7 +969,7 @@ sheep<- sheep %>%
  #plotly package
  #make matrix manuallly that contains data for plane
  
- 
+ plot_ly(x=~sheep$Weight,y=~sheep$SurvivedFirstYear,z=~sheep$VillTotal)
  
  
 

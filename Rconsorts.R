@@ -14,6 +14,10 @@ View(consorts)
                                     ConAge >= 1 ~ 0))  #gives 0 to consorts held by adult rams
   str(consorts$ConFirstYear)  #checkthis is formatted as num
   
+  #create column for Ewe Age at consort
+  consorts<- consorts %>% 
+    mutate(EweAge = ObsYear-EweBirthyear)
+  
   #counting number of consorts held by first year rams
   NumConFirstYear<- table(consorts$ConFirstYear)[names(table(consorts$ConFirstYear)) == 1] #count first year consorts
   NumConFirstYear #333 consorts held by first year rams 
@@ -91,5 +95,38 @@ View(consorts)
   cor.test(merged$ConFirstYear,merged$ratio,method="pearson")  
   #increase in first year consorts with inc female:male ratio
   
+  #correlation between EweAge and ConAge
+  plot(EweAge~ConAge,data=merged)
+  abline(lm(merged$EweAge~merged$ConAge),col="red",lwd=3)
+  cor.test(merged$EweAge,merged$ConAge,method="pearson")
+  #inc ConAge positively correlates with EweAge
   
+# 5. Modelling relationships
+  #relationship between consorting and success
+  modA<- glm(success~ConFirstYear+VillTotal+EweAge+Weight+BolCirc,
+             data=merged,family=binomial)
+  summary(modA) #remove EweAge
+  modA.2<- glm(success~ConFirstYear+VillTotal+Weight+BolCirc,
+               data=merged,family=binomial)
+  summary(modA.2)  #remove ConFirstYear 
+  modA.3<- glm(success~VillTotal+Weight+BolCirc,
+               data=merged,family=binomial)
+  summary(modA.3)
+  
+  #what predicts appearance in the rut?
+  modB<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+EweAge+Horn+Hindleg+VillTotal*Weight,
+             data=merged,family=binomial)
+  summary(modB) #remove EweAge
+  modB.2<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+Horn+Hindleg+VillTotal*Weight,
+             data=merged,family=binomial)
+  summary(modB.2)  #remove SibCoutn
+  modB.3<- glm(ConFirstYear~VillTotal+Weight+BolCirc+Horn+Hindleg+VillTotal*Weight,
+             data=merged,family=binomial)
+  summary(modB.3)  #remove Hindleg
+  modB.4<- glm(ConFirstYear~VillTotal+Weight+BolCirc+Horn+VillTotal*Weight,
+             data=merged,family=binomial)
+  summary(modB.4) #remove Horn
+  modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
+               data=merged,family=binomial)
+  summary(modB.5)  #effect sizes significant but very small - biologically important???
   

@@ -129,4 +129,5 @@ View(consorts)
   modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
                data=merged,family=binomial)
   summary(modB.5)  #effect sizes significant but very small - biologically important???
+ 
   

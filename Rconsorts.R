@@ -129,5 +129,14 @@ View(consorts)
   modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
                data=merged,family=binomial)
   summary(modB.5)  #effect sizes significant but very small - biologically important???
- 
+
+# --------- PLOTTING --------
+  modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
+               data=merged,family=binomial)
+  summary(modB.5)
+  #plot bol circ
+  plotA<- ggplot(merged,aes(BolCirc,ConFirstYear))+
+    geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+    theme_classic(base_size=18)
+  plotA
   

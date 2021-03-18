@@ -848,102 +848,97 @@ View(sheep)
    summary(mod20.3)
  
 # ------------------  7. PLOTTING  -------------------------
-  #plot model 9.4
-   mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
-   summary(mod9.4)
-   #plot in base R
-   plot(success~VillTotal,data=sheep)
-   abline(lm(sheep$success~sheep$VillTotal),col="red",lwd=3)
-   cor.test(sheep$success,sheep$VillTotal,method="pearson")
-   #plot using ggplot2
-   plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-       geom_point(aes(col=success))+                         #adds data points, diff colours for success/not
-       labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
-       labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
-       geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
-   plot_mod9  #view plot
+  
+   #plot model 9.4
+     mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
+     summary(mod9.4)
+     #plot in base R
+     plot(success~VillTotal,data=sheep)
+     abline(lm(sheep$success~sheep$VillTotal),col="red",lwd=3)
+     cor.test(sheep$success,sheep$VillTotal,method="pearson")
+     #plot using ggplot2
+     plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+         geom_point(aes(col=success))+                         #adds data points, diff colours for success/not
+         labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
+         labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
+         geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
+     plot_mod9  #view plot
    
    #plotting mod10.5
-   mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
-   summary(mod10.5)  
-   #would be 2 lines (singleton, twin) if there was an interaction
-   #no interaction so one line but colour points based on sib count
-   #plot in base R
-   plot(success~VillTotal,data=sheep,col=as.factor(SibCount)) #red twins, black single
-   #plot using ggplot2
-   plot_mod10<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-     geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
-     labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
-     labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
-     geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
-   plot_mod10  #view plot
-   
-   #plot mod13 (same as 10 but count data)
-   mod13.4<- glm(CountOfFirstRutOffspring~SibCount+VillTotal,
-                 data=sheep,family=poisson)
-   summary(mod13.4)
-   #plot in base R
-   plot(CountOfFirstRutOffspring~VillTotal,data=sheep,col=as.factor(SibCount))
-   #plot with ggplot2
-   plot_mod13<- ggplot(sheep,aes(VillTotal,CountOfFirstRutOffspring))+             #creates base plot
-     geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
-     labs(x="Total Village Population",y="First Year Offspring")+     #adds labels to X and Y axes
-     labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
-     geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
-   plot_mod13  #view plot
+     mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
+     summary(mod10.5)  
+     #would be 2 lines (singleton, twin) if there was an interaction
+     #no interaction so one line but colour points based on sib count
+     #plot in base R
+     plot(success~VillTotal,data=sheep,col=as.factor(SibCount)) #red twins, black single
+     #plot using ggplot2
+     plot_mod10<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+       geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
+       labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
+       labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
+       geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
+     plot_mod10  #view plot
    
    #plot mod11
-   mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
-   summary(mod11.9)
-   #plot VillTotal
-   plot1<- ggplot(sheep,aes(VillTotal,success))+
-     geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-     theme_classic(base_size=18)
-   plot1 
-   #plot BolCirc
-   plot2<- ggplot(sheep,aes(BolCirc,success))+
-     geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-     theme_classic(base_size=18)
-   plot2
-   #plot side by side
-   plot_mod11<- plot1 + plot2
-   plot_mod11
+     mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
+     summary(mod11.9)
+     #plot VillTotal
+     plot1<- ggplot(sheep,aes(VillTotal,success))+
+       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+       theme_classic(base_size=18)
+     plot1 
+     #plot BolCirc
+     plot2<- ggplot(sheep,aes(BolCirc,success))+
+       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+       theme_classic(base_size=18)
+     plot2
+     #plot side by side
+     plot_mod11<- plot1 + plot2
+     plot_mod11
+   
+   #plot mod15
+     mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
+     summary(mod15.8)
+     #plot
+     plot_mod15<- ggplot(sheep,aes(LifetimeOffspring,DeathAge))+
+       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+       theme_classic(base_size=18)
+     plot_mod15
    
    #plot mod17
-   mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
-                 data=sheep,family=poisson)
-   summary(mod17.5)
-   #plot success
-   plot3<- ggplot(sheep,aes(success,LifetimeOffspring))+
-     geom_point()+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-     theme_classic(base_size=18)
-   plot3  #this seems wrong
-   #plot Weight
-   plot4<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
-     geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
-     theme_classic(base_size=18)
-   plot4
-   #plot BolCirc
-   plot5<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
-     geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
-     theme_classic(base_size=18)
-   plot5
-   #plot VillTotal
-   plot6<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
-     geom_point(col="slateblue4")+geom_smooth(method=lm,se=FALSE,col="steelblue1")+
-     theme_classic(base_size=18)
-   plot6
-   #put together into panel
-   plot_mod17<- (plot3+plot4)/(plot5+plot6)
-   plot_mod17
+     mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
+                   data=sheep,family=poisson)
+     summary(mod17.5)
+     #plot success
+     plot3<- ggplot(sheep,aes(success,LifetimeOffspring))+
+       geom_point()+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
+       theme_classic(base_size=18)
+     plot3  #this seems wrong
+     #plot Weight
+     plot4<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
+       geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
+       theme_classic(base_size=18)
+     plot4
+     #plot BolCirc
+     plot5<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
+       geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
+       theme_classic(base_size=18)
+     plot5
+     #plot VillTotal
+     plot6<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
+       geom_point(col="slateblue4")+geom_smooth(method=lm,se=FALSE,col="steelblue1")+
+       theme_classic(base_size=18)
+     plot6
+     #put together into panel
+     plot_mod17<- (plot3+plot4)/(plot5+plot6)
+     plot_mod17
  
-#------------3d plot--------------------
- mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+  #plot mod21
+    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                  Weight*VillTotal,data=sheep,family=binomial)
- summary(mod21.3)
- 
- #using geom_contour
- plot_mod21 <- ggplot(sheep,aes(VillTotal,Weight,z=SurvivedFirstYear))+
-   geom_density2d_filled(palette="Spectral")+
-   labs(x="Village Bay Population",y="August Weight (kg)")
- plot_mod21 
+    summary(mod21.3)
+    #using geom_contour
+    plot_mod21 <- ggplot(sheep,aes(VillTotal,Weight,z=SurvivedFirstYear))+
+      geom_density2d_filled(palette="Spectral")+
+      labs(x="Village Bay Population",y="August Weight (kg)")
+    plot_mod21 

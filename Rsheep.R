@@ -787,7 +787,7 @@ View(sheep)
                    (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
    summary(mod16) 
    #check for zero inflation
-   check_zeroinflation(mod16) #probable zero inflation --> only look at binary?
+   check_zeroinflation(mod16) #probable zero inflation 
    #remove Weight
    mod16.2<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+success+BolCirc+VillTotal+
                     (1|BirthYear)+(1|DeathYear),data=sheep,family=poisson)
@@ -856,12 +856,12 @@ View(sheep)
    abline(lm(sheep$success~sheep$VillTotal),col="red",lwd=3)
    cor.test(sheep$success,sheep$VillTotal,method="pearson")
    #plot using ggplot2
-   plot1<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+   plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
        geom_point(aes(col=success))+                         #adds data points, diff colours for success/not
        labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
        labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
        geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
-   plot1  #view plot
+   plot_mod9  #view plot
    
    #plotting mod10.5
    mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
@@ -871,12 +871,12 @@ View(sheep)
    #plot in base R
    plot(success~VillTotal,data=sheep,col=as.factor(SibCount)) #red twins, black single
    #plot using ggplot2
-   plot2<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
+   plot_mod10<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
      geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
      labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
      labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
      geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
-   plot2  #view plot
+   plot_mod10  #view plot
    
    #plot mod13 (same as 10 but count data)
    mod13.4<- glm(CountOfFirstRutOffspring~SibCount+VillTotal,
@@ -885,71 +885,57 @@ View(sheep)
    #plot in base R
    plot(CountOfFirstRutOffspring~VillTotal,data=sheep,col=as.factor(SibCount))
    #plot with ggplot2
-   plot2<- ggplot(sheep,aes(VillTotal,CountOfFirstRutOffspring))+             #creates base plot
+   plot_mod13<- ggplot(sheep,aes(VillTotal,CountOfFirstRutOffspring))+             #creates base plot
      geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
      labs(x="Total Village Population",y="First Year Offspring")+     #adds labels to X and Y axes
      labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
      geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
-   plot2  #view plot
+   plot_mod13  #view plot
    
    #plot mod11
    mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
    summary(mod11.9)
-   #plotting (Claudia's code)
-   par(mfrow=c(1,2)) #plots appear side by side
-   #first variable (VillTotal)
-   x1<- seq(0,700,100)  #specifying range and scale of x axis
-   y1<- predict(mod11.9,list(VillTotal=x1),type="response") #specify model and first continuous variable
-   plot(success~VillTotal,data=sheep)
-   lines(x1,y1,col="red")
-   #second variable (BolCirc)
-   x2<- seq(0,300,50)
-   y2<- predict(mod11.9,list(BolCirc=x2),type="response") 
-   plot(success~BolCirc,data=sheep)
-   lines(x2,y2,col="red") 
-   par(mfrow=c(1,1)) #putting plots back to 1,1 for future plotting
-   ###lines not working###
-   
-   #try in ggplot2 (using patchwork package to put side by side)
    #plot VillTotal
-   plot3<- ggplot(sheep,aes(VillTotal,success))+
+   plot1<- ggplot(sheep,aes(VillTotal,success))+
      geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
      theme_classic(base_size=18)
-   plot3 
+   plot1 
    #plot BolCirc
-   plot4<- ggplot(sheep,aes(BolCirc,success))+
+   plot2<- ggplot(sheep,aes(BolCirc,success))+
      geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
      theme_classic(base_size=18)
-   plot4
+   plot2
    #plot side by side
-   plot3 + plot4
+   plot_mod11<- plot1 + plot2
+   plot_mod11
    
    #plot mod17
    mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
                  data=sheep,family=poisson)
    summary(mod17.5)
    #plot success
-   plot5<- ggplot(sheep,aes(success,LifetimeOffspring))+
+   plot3<- ggplot(sheep,aes(success,LifetimeOffspring))+
      geom_point()+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
      theme_classic(base_size=18)
-   plot5  #this seems wrong
+   plot3  #this seems wrong
    #plot Weight
-   plot6<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
+   plot4<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
      geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
      theme_classic(base_size=18)
-   plot6
+   plot4
    #plot BolCirc
-   plot7<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
+   plot5<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
      geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
      theme_classic(base_size=18)
-   plot7
+   plot5
    #plot VillTotal
-   plot8<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
+   plot6<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
      geom_point(col="slateblue4")+geom_smooth(method=lm,se=FALSE,col="steelblue1")+
      theme_classic(base_size=18)
-   plot8
+   plot6
    #put together into panel
-   (plot5+plot6)/(plot7+plot8)
+   plot_mod17<- (plot3+plot4)/(plot5+plot6)
+   plot_mod17
  
 #------------3d plot--------------------
  mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+

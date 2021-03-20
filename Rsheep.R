@@ -862,7 +862,7 @@ View(sheep)
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
          geom_point(aes(),col="#3cbb75ff")+                         #adds data points, diff colours for success/not
-         labs(x="Total Village Bay \nPopulation",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
+         labs(x="Village Bay Population",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
          theme_classic(base_size=10)+    #changes background colour
          geom_smooth(method = "lm", se = FALSE,col="#440154FF")   #adds line to graph
      plot_mod9  #view plot
@@ -880,28 +880,33 @@ View(sheep)
                                    SibCount == 0 ~ "Singleton"))
      
      #plot using ggplot2
-     plot_mod10<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-       geom_point(aes(col=TwinStatus))+                         #adds data points, diff colours for SibCount
-       labs(x="Total Village Bay \nPopulation",y="First Year Breeding \nSuccess")+     #adds labels to X and Y axes
-       labs(color="Twin Status")+theme_classic(base_size=10)+    #adds title to legend and changes background colour
-       geom_smooth(method = "lm", se = FALSE,col="#440154FF")   #adds line to graph
-     plot_mod10  #view plot
+     plot_mod10<- ggplot(sheep,aes(VillTotal,success))+                         #creates base plot
+       geom_point(aes(col=TwinStatus))+                                         #adds points based on twin status
+       scale_color_manual(values=c("Singleton"="#55c667ff","Twin"="#39568cff"))+    #changes colour of points
+       labs(x="Village Bay Population",y="First Year Breeding \nSuccess")+  #adds labels to X and Y axes
+       labs(color="Twin Status")+theme_classic(base_size=10)+                       #adds title to legend and changes background colour
+       geom_smooth(method = "lm", se = FALSE,col="#440154FF")                       #adds line to graph
+     plot_mod10      #view plot
    
    #plot mod11
      mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
      summary(mod11.9)
      #plot VillTotal
-     plot1<- ggplot(sheep,aes(VillTotal,success))+
-       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-       theme_classic(base_size=18)
-     plot1 
+     p1<- ggplot(sheep,aes(VillTotal,success))+
+       geom_point(aes(),col="#3cbb75ff",size=1)+
+       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       labs(x="Village Bay Population",y="First Year Breeding Success")+
+       theme_classic(base_size=10)
+     p1 
      #plot BolCirc
-     plot2<- ggplot(sheep,aes(BolCirc,success))+
-       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-       theme_classic(base_size=18)
-     plot2
+     p2<- ggplot(sheep,aes(BolCirc,success))+
+       geom_point(col="#3cbb75ff",size=1)+
+       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       labs(x="Testes Circumference (mm)",y="")+
+       theme_classic(base_size=10)
+     p2
      #plot side by side
-     plot_mod11<- plot1 + plot2
+     plot_mod11<- p1 + p2
      plot_mod11
    
    #plot mod15
@@ -909,8 +914,10 @@ View(sheep)
      summary(mod15.8)
      #plot
      plot_mod15<- ggplot(sheep,aes(LifetimeOffspring,DeathAge))+
-       geom_point(col="steelblue")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-       theme_classic(base_size=18)
+       geom_point(col="#3cbb75ff",size=1)+
+       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       labs(x="Lifetime Offspring",y="Age of Death")+
+       theme_classic(base_size=10)
      plot_mod15
    
    #plot mod17

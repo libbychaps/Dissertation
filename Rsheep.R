@@ -16,6 +16,9 @@ library(scatterplot3d)
 library(plotly)
 library(see)
 library(qqplotr)
+library(RColorBrewer)
+library(viridis)
+library(scales)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -858,25 +861,30 @@ View(sheep)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-         geom_point(aes(col=success))+                         #adds data points, diff colours for success/not
-         labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
-         labs(color="Success")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
-         geom_smooth(method = "lm", se = FALSE,col="purple")   #adds line to graph
+         geom_point(aes(),col="#3cbb75ff")+                         #adds data points, diff colours for success/not
+         labs(x="Total Village Bay \nPopulation",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
+         theme_classic(base_size=10)+    #changes background colour
+         geom_smooth(method = "lm", se = FALSE,col="#440154FF")   #adds line to graph
      plot_mod9  #view plot
-   
+     
+  
    #plotting mod10.5
      mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
      summary(mod10.5)  
-     #would be 2 lines (singleton, twin) if there was an interaction
-     #no interaction so one line but colour points based on sib count
      #plot in base R
      plot(success~VillTotal,data=sheep,col=as.factor(SibCount)) #red twins, black single
+    
+     #make column with twin/singleton
+     sheep<- sheep %>%
+       mutate(TwinStatus=case_when(SibCount == 1 ~ "Twin",   
+                                   SibCount == 0 ~ "Singleton"))
+     
      #plot using ggplot2
      plot_mod10<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-       geom_point(aes(col=SibCount))+                         #adds data points, diff colours for SibCount
-       labs(x="Total Village Population",y="First year breeding success")+     #adds labels to X and Y axes
-       labs(color="SibCount")+theme_classic(base_size=18)+    #adds title to legend and changes background colour
-       geom_smooth(method = "lm", se = FALSE,col="red")   #adds line to graph
+       geom_point(aes(col=TwinStatus))+                         #adds data points, diff colours for SibCount
+       labs(x="Total Village Bay \nPopulation",y="First Year Breeding \nSuccess")+     #adds labels to X and Y axes
+       labs(color="Twin Status")+theme_classic(base_size=10)+    #adds title to legend and changes background colour
+       geom_smooth(method = "lm", se = FALSE,col="#440154FF")   #adds line to graph
      plot_mod10  #view plot
    
    #plot mod11
@@ -939,6 +947,8 @@ View(sheep)
     summary(mod21.3)
     #using geom_contour
     plot_mod21 <- ggplot(sheep,aes(VillTotal,Weight,z=SurvivedFirstYear))+
-      geom_density2d_filled(palette="Spectral")+
-      labs(x="Village Bay Population",y="August Weight (kg)")
+      geom_density2d_filled()+scale_fill_viridis(discrete=TRUE)+
+      labs(x="Village Bay Population",y="August Weight \n(kg)",
+      fill="First Year Survival")+theme_classic(base_size=10)
     plot_mod21 
+  

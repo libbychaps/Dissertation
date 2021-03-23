@@ -861,11 +861,11 @@ View(sheep)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-         geom_point(aes(),col="#3cbb75ff")+                         #adds data points, diff colours for success/not
+         geom_point(aes(),col="#3cbb75ff",size=1)+                         #adds data points, diff colours for success/not
          labs(x="Village Bay Population",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
          theme_classic(base_size=10)+    #changes background colour
-         geom_smooth(method = "lm", se = FALSE,col="#440154FF")   #adds line to graph
-     plot_mod9  #view plot
+         stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
+         plot_mod9  #view plot
      
   
    #plotting mod10.5
@@ -881,11 +881,11 @@ View(sheep)
      
      #plot using ggplot2
      plot_mod10<- ggplot(sheep,aes(VillTotal,success))+                         #creates base plot
-       geom_point(aes(col=TwinStatus))+                                         #adds points based on twin status
+       geom_point(aes(col=TwinStatus),size=1)+                                         #adds points based on twin status
        scale_color_manual(values=c("Singleton"="#55c667ff","Twin"="#39568cff"))+    #changes colour of points
        labs(x="Village Bay Population",y="First Year Breeding \nSuccess")+  #adds labels to X and Y axes
-       labs(color="Twin Status")+theme_classic(base_size=10)+                       #adds title to legend and changes background colour
-       geom_smooth(method = "lm", se = FALSE,col="#440154FF")                       #adds line to graph
+       labs(color="Twin Status")+theme_classic(base_size=10)+ 
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
      plot_mod10      #view plot
    
    #plot mod11
@@ -894,14 +894,14 @@ View(sheep)
      #plot VillTotal
      p1<- ggplot(sheep,aes(VillTotal,success))+
        geom_point(aes(),col="#3cbb75ff",size=1)+
-       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
        labs(x="Village Bay Population",y="First Year Breeding Success")+
        theme_classic(base_size=10)
      p1 
      #plot BolCirc
      p2<- ggplot(sheep,aes(BolCirc,success))+
        geom_point(col="#3cbb75ff",size=1)+
-       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
        labs(x="Testes Circumference (mm)",y="")+
        theme_classic(base_size=10)
      p2
@@ -915,7 +915,7 @@ View(sheep)
      #plot
      plot_mod15<- ggplot(sheep,aes(LifetimeOffspring,DeathAge))+
        geom_point(col="#3cbb75ff",size=1)+
-       geom_smooth(method=lm,se=FALSE,col="#440154FF")+
+       geom_smooth(method=glm,se=FALSE,col="#440154FF")+
        labs(x="Lifetime Offspring",y="Age of Death")+
        theme_classic(base_size=10)
      plot_mod15
@@ -953,9 +953,33 @@ View(sheep)
                  Weight*VillTotal,data=sheep,family=binomial)
     summary(mod21.3)
     #using geom_contour
-    plot_mod21 <- ggplot(sheep,aes(VillTotal,Weight,z=SurvivedFirstYear))+
-      geom_density2d_filled()+scale_fill_viridis(discrete=TRUE)+
+    plot7 <- ggplot(sheep,aes(x=VillTotal,y=Weight,z=SurvivedFirstYear))+
+      geom_density2d_filled(bins=20)+scale_fill_viridis(option="plasma",discrete=TRUE)+
       labs(x="Village Bay Population",y="August Weight \n(kg)",
       fill="First Year Survival")+theme_classic(base_size=10)
-    plot_mod21 
+    plot7 
+    
+    #plot for success
+    plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+            
+      geom_point(aes(),col="#3cbb75ff",size=3)+                         
+      labs(x="First Year Breeding Success",y="First Year Survival")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
+    plot8 
+    
+    #combine plots
+    plot_mod21<- plot7+plot8
+    plot_mod21
+
+    
+    plot_mod9
+    plot_mod10
+    plot_mod11
+    plot_mod15
+    plot_mod21
+    
+    
+    #from katie in meeting
+    stat_smooth(method="glm", method.args=list(family="binomial"), col = "red", se=FALSE)
+    
   

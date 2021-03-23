@@ -746,7 +746,7 @@ View(sheep)
   
 ### 6. Modelling future survival and reproduction ###
   #model Death Age 
-   hist(sheep$DeathAge) #not normally distributed --> poisson?
+   hist(sheep$DeathAge,breaks=50) #poisson distributed
    mod15<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                    Weight+LifetimeOffspring*CountOfFirstRutOffspring+
                    (1|BirthYear),data=sheep,family=poisson) 
@@ -778,6 +778,35 @@ View(sheep)
    summary(mod15.7) #lifetime offspring becomes highly significant again
    mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
    summary(mod15.8)
+   
+   #new version of mod15, with horn and ConFirstYear included (MERGED df)
+   mod23<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                   Weight+Horn+ConFirstYear+(1|BirthYear)+
+                   (1|DeathYear),data=merged,family=poisson)
+   summary(mod23)  #remove Weight
+   mod23.2<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                     Horn+ConFirstYear+(1|BirthYear)+
+                     (1|DeathYear),data=merged,family=poisson)
+   summary(mod23.2) #remove horn
+   mod23.3<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                     ConFirstYear+(1|BirthYear)+(1|DeathYear),
+                     data=merged,family=poisson)
+   summary(mod23.3) #remove CountOfFirstRutOffspring
+   mod23.4<- glmer(DeathAge~LifetimeOffspring+ConFirstYear+
+                     (1|BirthYear)+(1|DeathYear),data=merged,family=poisson)
+   summary(mod23.4) #try removing random effect
+   mod23.5<- glm(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                   Horn+ConFirstYear,
+                   data=merged,family=poisson)
+   summary(mod23.5) #if no random effects, lifetime offspring, first year offspring, horn and con all affect survival
+   #if only (1|BirthYear)
+   mod23.6<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                             Horn+ConFirstYear+Weight+(1|BirthYear),
+                           data=merged,family=poisson)
+   summary(mod23.6) #remove weight
+   mod23.7<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                     Horn+ConFirstYear+(1|BirthYear),dat=merged,family=poisson)
+   summary(mod23.7)
    
   #model LBS
    hist(sheep$LifetimeOffspring) #poisson (or zero inflated?)
@@ -829,11 +858,15 @@ View(sheep)
    #re-do mod17 with subsequent offspring 
    hist(sheep$SubsOffspring,breaks=70)
    mod22<- glmer(SubsOffspring~success+BolCirc+Weight+VillTotal+
-                (1|DeathYear),data=sheep,family=poisson)
-   summary(mod22) #remove success
-   mod22.2<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+
-                (1|DeathYear),data=sheep,family=poisson)
+                   Horn+SibCount+
+                   (1|DeathYear),data=sheep,family=poisson)
+   summary(mod22)
+   mod22.2<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
+                     (1|DeathYear),data=sheep,family=poisson)
    summary(mod22.2)
+   mod22.3<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn+
+                     (1|DeathYear),data=sheep,family=poisson)
+   summary(mod22.3)  #minimal model
    
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
@@ -987,6 +1020,45 @@ View(sheep)
     #combine plots
     plot_mod21<- plot7+plot8
     plot_mod21
+    
+    
+    #plot_mod22
+    mod22.3<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
+                    data=sheep,family=poisson)
+    summary(mod22.3)
+    #plot BolCirc
+    plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
+      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#440154FF",se=FALSE) 
+    plot9
+    #plot Weight
+    plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
+      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      labs(x="August weight (kg)",y="Subsequent offspring")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#440154FF",se=FALSE) 
+    plot10
+    #plotVillTotal
+    plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
+      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      labs(x="Village Bay population",y="Subsequent offspring")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#440154FF",se=FALSE) 
+    plot11
+    #plot Horn
+    plot12<- ggplot(sheep, aes(Horn,SubsOffspring,fill=Horn)) +
+      geom_bar(stat="identity")+theme_classic(base_size=10)
+    plot12
+    
+    #combine plots
+    plot_mod23<- (plot9+plot10)/(plot11+plot12)
+    plot_mod23
+    
 
     
     plot_mod9

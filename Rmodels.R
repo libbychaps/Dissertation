@@ -1,4 +1,4 @@
-# 1. What factors determine success of ram lambs?
+# 1. What factors are associated with ram lamb success?
   # mod9: VillTotal decreases success (all sheep)
   # mod10: SibCount and VillTotal decrease success 
   # mod11: BolCirc increases success, VillTotal decreaases (Aug catch animals)
@@ -12,7 +12,7 @@
  mod11.12<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
  summary(mod11.12)
  
-# 2. How does first year reproduction affect future survival and reproduction?
+# 2. How does first year reproduction relate to future survival and reproduction?
   # mod15: Individuals with more offspring have lived longer (vice versa)
   # mod16: More offspirng in first rut inc. LBS, BolCirc inc., VillTotal dec. (but zero inflated)
   # mod17: success, Weight, BolCirc inc. LBS, VillTotal dec. (but zero inflated)
@@ -30,12 +30,12 @@
  mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,data=sheep,family=binomial)
  summary(mod21.3)
  
-# 3. Does holding a consort affect the success of lambs?
+# 3. Is holding a consort associated with the success of ram lambs?
   # modA: holding a consort does not affect success in first year
  
  modA.3<- glm(success~VillTotal+Weight+BolCirc,data=merged,family=binomial)
  summary(modA.3)
- #ConFirstYear was removed from maximal model bc insignificant
+ #ConFirstYear was removed from maximal model because insignificant
 
 # 4. What factors determine appearance in a consort?
   # modB: BolCirc increases appearance in rut, VillTotal*Weight decreases appearance in rut

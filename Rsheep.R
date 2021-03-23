@@ -822,6 +822,19 @@ View(sheep)
                    data=sheep,family=poisson)
    summary(mod17.5) #all significant
    
+   #create column for subsequent offspring (not inc first year)
+   sheep<- sheep %>% 
+     mutate(SubsOffspring = LifetimeOffspring-CountOfFirstRutOffspring)
+   
+   #re-do mod17 with subsequent offspring 
+   hist(sheep$SubsOffspring,breaks=70)
+   mod22<- glmer(SubsOffspring~success+BolCirc+Weight+VillTotal+
+                (1|DeathYear),data=sheep,family=poisson)
+   summary(mod22) #remove success
+   mod22.2<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+
+                (1|DeathYear),data=sheep,family=poisson)
+   summary(mod22.2)
+   
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
                    Weight*VillTotal,data=sheep,family=binomial)
@@ -958,6 +971,10 @@ View(sheep)
       labs(x="Village Bay Population",y="August Weight \n(kg)",
       fill="First Year Survival")+theme_classic(base_size=10)
     plot7 
+    
+    ggplot(sheep, aes(VillTotal,Weight)) +
+      geom_tile(aes(fill=SurvivedFirstYear), colour = "white") +
+      scale_fill_gradient(low = "white", high = "red")
     
     #plot for success
     plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+            

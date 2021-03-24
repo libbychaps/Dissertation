@@ -1028,39 +1028,47 @@ View(sheep)
     summary(mod22.3)
     #plot BolCirc
     plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
-      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1)+                         
       labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#440154FF",se=FALSE) 
+                  col="#5901A5FF",se=FALSE) 
     plot9
     #plot Weight
     plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
-      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1)+                         
       labs(x="August weight (kg)",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#440154FF",se=FALSE) 
+                  col="#5901A5FF",se=FALSE) 
     plot10
     #plotVillTotal
     plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
-      geom_point(aes(),col="#3cbb75ff",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1)+                         
       labs(x="Village Bay population",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#440154FF",se=FALSE) 
+                  col="#5901A5FF",se=FALSE) 
     plot11
-    #plot Horn
-    plot12<- ggplot(sheep, aes(Horn,SubsOffspring,fill=Horn)) +
-      geom_bar(stat="identity")+theme_classic(base_size=10)
+    
+    
+    #make categorical column for horn type
+    sheep<- sheep %>%
+      mutate(HornType=case_when(Horn == 3 ~ "Normal",   
+                                Horn == 1 ~ "Scurred"))
+    #plot Horn (bar chart)
+    plot12<- ggplot(data=sheep,aes(HornType,SubsOffspring,fill=HornType)) +
+      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
+      labs(x="Horn Type",y="Subsequent Offspring")+
+      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#5901A5FF","#FEB72DFF"))
     plot12
+    
     
     #combine plots
     plot_mod23<- (plot9+plot10)/(plot11+plot12)
     plot_mod23
     
-
-    
+    show_col(viridis_pal(option="plasma")(20))
     plot_mod9
     plot_mod10
     plot_mod11

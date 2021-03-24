@@ -19,6 +19,7 @@ library(qqplotr)
 library(RColorBrewer)
 library(viridis)
 library(scales)
+library(plotrix)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -864,8 +865,7 @@ View(sheep)
    mod22.2<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
                      (1|DeathYear),data=sheep,family=poisson)
    summary(mod22.2)
-   mod22.3<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn+
-                     (1|DeathYear),data=sheep,family=poisson)
+   mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
    summary(mod22.3)  #minimal model
    
   #modelling survival of first year
@@ -1028,27 +1028,27 @@ View(sheep)
     summary(mod22.3)
     #plot BolCirc
     plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
       labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#5901A5FF",se=FALSE) 
+                  col="#8305A7FF",se=FALSE) 
     plot9
     #plot Weight
     plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
       labs(x="August weight (kg)",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#5901A5FF",se=FALSE) 
+                  col="#8305A7FF",se=FALSE) 
     plot10
     #plotVillTotal
     plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1)+                         
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
       labs(x="Village Bay population",y="Subsequent offspring")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#5901A5FF",se=FALSE) 
+                  col="#8305A7FF",se=FALSE) 
     plot11
     
     #make categorical column for horn type
@@ -1062,17 +1062,15 @@ View(sheep)
       scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#5901A5FF","#FEB72DFF"))
     plot12
     
-    #plot horn (box plot)
-    plot13<- ggplot(data=sheep,aes(HornType,SubsOffspring,fill=HornType))+
-      geom_violin()
-    plot13
-    
-    #finding average for each horn type
+    #finding average and SE for each horn type
     sheepNormal<- sheep %>%
       filter(Horn==3)
     View(sheepNormal)
     meanNormalSubs<- mean(sheepNormal$SubsOffspring)
     meanNormalSubs
+    
+    SEnormal<- std.error(sheepNormal$SubsOffspring)
+    SEnormal
     
     sheepScurred<- sheep %>%
       filter(Horn==1)
@@ -1080,23 +1078,35 @@ View(sheep)
     meanScurredSubs<- mean(sheepScurred$SubsOffspring)
     meanScurredSubs
     
+    SEscurred<- std.error(sheepScurred$SubsOffspring)
+    SEscurred
+    
     HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
     View(HornMeans)
     
     plot14<- ggplot(HornMeans,aes(HornType,MeanSubsOff,fill=HornType))+
-      geom_bar(stat="identity")
+      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
+      labs(x="Horn Type",y="Subsequent Offspring")+
+      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#8305A7FF"))+
+      geom_errorbar(aes(ymin=MeanSubsOff-SE,ymax=MeanSubsOff+SE),width=.2,
+                    lwd=1,position=position_dodge(.9))
     plot14
     
     #combine plots
-    plot_mod23<- (plot9+plot10)/(plot11+plot12)
+    plot_mod23<- (plot9+plot10)/(plot11+plot14)
     plot_mod23
     
     show_col(viridis_pal(option="plasma")(20))
+    show_col(viridis_pal(option="magma")(20))
+    show_col(viridis_pal(option="inferno")(20))
+    show_col(viridis_pal()(20))
+    
     plot_mod9
     plot_mod10
     plot_mod11
     plot_mod15
     plot_mod21
+    plot_mod23
     
     
     #from katie in meeting

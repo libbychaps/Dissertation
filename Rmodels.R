@@ -13,19 +13,17 @@
  summary(mod11.12)
  
 # 2. How does first year reproduction relate to future survival and reproduction?
-  # mod15: Individuals with more offspring have lived longer (vice versa)
-  # mod16: More offspirng in first rut inc. LBS, BolCirc inc., VillTotal dec. (but zero inflated)
-  # mod17: success, Weight, BolCirc inc. LBS, VillTotal dec. (but zero inflated)
-  # mod21: success increases survival, Weight*VillTotal increases survival
+ #SURVIVAL
+  # mod23: Lifetime offspring inc death age, count of first rut offspring, horn and con in first year decrease death age
+  # mod21: success increases survival in first year, Weight*VillTotal increases survival in first year
+ #FUTURE REPRO
+  # mod22: bolCirc, weight and horn increase subsequent offspring, villtotal decreases
+ mod23.5<- glm(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+Horn+ConFirstYear,
+               data=merged,family=poisson)
+ summary(mod23.5)
  
- mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
- summary(mod15.8)
- 
- mod16.4<- glmer(LifetimeOffspring~CountOfFirstRutOffspring+BolCirc+VillTotal+(1|DeathYear),data=sheep,family=poisson)
- summary(mod16.4) 
- 
- mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,data=sheep,family=poisson)
- summary(mod17.5)
+ mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
+ summary(mod22.3)
  
  mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,data=sheep,family=binomial)
  summary(mod21.3)

@@ -1051,7 +1051,6 @@ View(sheep)
                   col="#5901A5FF",se=FALSE) 
     plot11
     
-    
     #make categorical column for horn type
     sheep<- sheep %>%
       mutate(HornType=case_when(Horn == 3 ~ "Normal",   
@@ -1063,6 +1062,30 @@ View(sheep)
       scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#5901A5FF","#FEB72DFF"))
     plot12
     
+    #plot horn (box plot)
+    plot13<- ggplot(data=sheep,aes(HornType,SubsOffspring,fill=HornType))+
+      geom_violin()
+    plot13
+    
+    #finding average for each horn type
+    sheepNormal<- sheep %>%
+      filter(Horn==3)
+    View(sheepNormal)
+    meanNormalSubs<- mean(sheepNormal$SubsOffspring)
+    meanNormalSubs
+    
+    sheepScurred<- sheep %>%
+      filter(Horn==1)
+    View(sheepScurred)
+    meanScurredSubs<- mean(sheepScurred$SubsOffspring)
+    meanScurredSubs
+    
+    HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
+    View(HornMeans)
+    
+    plot14<- ggplot(HornMeans,aes(HornType,MeanSubsOff,fill=HornType))+
+      geom_bar(stat="identity")
+    plot14
     
     #combine plots
     plot_mod23<- (plot9+plot10)/(plot11+plot12)

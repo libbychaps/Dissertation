@@ -1093,7 +1093,50 @@ View(sheep)
     plot14
     
     #combine plots
-    plot_mod23<- (plot9+plot10)/(plot11+plot14)
+    plot_mod22<- (plot9+plot10)/(plot11+plot14)
+    plot_mod22
+    
+    #plot_mod23
+    mod23.5<- glm(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
+                    Horn+ConFirstYear,data=merged,family=poisson)
+    summary(mod23.5)
+    #plot Lifetime Offspring
+    plot15<- ggplot(merged,aes(LifetimeOffspring,DeathAge))+            
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      labs(x="Lifetime Breeding Success",y="Age of Death")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#8305A7FF",se=FALSE) 
+    plot15
+    
+    #plot first rut offspring
+    plot16<- ggplot(merged,aes(CountOfFirstRutOffspring,DeathAge))+            
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      labs(x="Offspring in first year",y="Age of Death")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#8305A7FF",se=FALSE) 
+    plot16
+    
+    #plot Con First Year
+    plot17<- ggplot(merged,aes(ConFirstYear,DeathAge))+            
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      labs(x="Consort in first year?",y="Age of Death")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#8305A7FF",se=FALSE) 
+    plot17
+    
+    #plot Horn
+    plot18<- ggplot(merged,aes(Horn,DeathAge))+            
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      labs(x="Horn Type",y="Age of Death")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="poisson"),
+                  col="#8305A7FF",se=FALSE)
+    plot18
+    
+    plot_mod23<- (plot15+plot16)/(plot17+plot18)
     plot_mod23
     
     show_col(viridis_pal(option="plasma")(20))
@@ -1106,7 +1149,7 @@ View(sheep)
     plot_mod11
     plot_mod15
     plot_mod21
-    plot_mod23
+    plot_mod22
     
     
     #from katie in meeting

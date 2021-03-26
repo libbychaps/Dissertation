@@ -136,7 +136,9 @@ View(consorts)
   summary(modB.5)
   #plot bol circ
   plotA<- ggplot(merged,aes(BolCirc,ConFirstYear))+
-    geom_point(col="steelblue1")+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-    theme_classic(base_size=18)
+    geom_point(col="#3cbb75ff",size=1)+
+    geom_smooth(method=glm,se=FALSE,col="#440154FF")+
+    labs(x="Testes circumference (mm)",y="First year consort")+
+    theme_classic(base_size=10)
   plotA
   

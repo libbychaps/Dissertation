@@ -416,7 +416,6 @@ View(sheep)
   rcorr(as.matrix(sheep)) #too many NAs for individual data?
   
   
-  
 ### 3. Initial modelling (First year success) ###
   #model for success (1/0)
   #create generalised linear model with binomial data 
@@ -907,10 +906,10 @@ View(sheep)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-         geom_point(aes(),col="#3cbb75ff",size=1)+                         #adds data points, diff colours for success/not
+         geom_point(aes(),col="#66C2A5",size=2)+                         #adds data points, diff colours for success/not
          labs(x="Village Bay Population",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
          theme_classic(base_size=10)+    #changes background colour
-         stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
+         stat_smooth(method="glm",method.args=list(family="binomial"),col="#FC8D62",se=FALSE)
          plot_mod9  #view plot
      
   
@@ -1005,17 +1004,26 @@ View(sheep)
       fill="First Year Survival")+theme_classic(base_size=10)
     plot7 
     
+    ggplot(sheep,aes(VillTotal,Weight,fill=SurvivedFirstYear))+
+      stat_density_2d( bins=11, geom = "polygon") +
+      scale_fill_viridis(option="plasma")
+    
     ggplot(sheep, aes(VillTotal,Weight)) +
       geom_tile(aes(fill=SurvivedFirstYear), colour = "white") +
       scale_fill_gradient(low = "white", high = "red")
     
+    #transform pop into categorical "high" or "low"
+    sheep<- sheep %>%
+      mutate(PopType=case_when(VillTotal <450 ~ "Low",   
+                               VillTotal >=450 ~ "High"))
+    
+    
     #plot for success
-    plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+            
-      geom_point(aes(),col="#3cbb75ff",size=3)+                         
-      labs(x="First Year Breeding Success",y="First Year Survival")+     
-      theme_classic(base_size=10)+    
-      stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
-    plot8 
+    plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+
+      geom_bar(stat="identity",width=0.5)+
+      labs(x="First year breeding success",y="First year survival")+
+      theme_classic(base_size=10)
+    plot8
     
     #combine plots
     plot_mod21<- plot7+plot8
@@ -1119,30 +1127,76 @@ View(sheep)
     plot16
     
     #plot Con First Year
-    plot17<- ggplot(merged,aes(ConFirstYear,DeathAge))+            
+    plot17<- ggplot(merged,aes(x=ConFirstYear,y=DeathAge))+            
       geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
       labs(x="Consort in first year?",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
                   col="#8305A7FF",se=FALSE) 
     plot17
+
+    #make categorical column for ConFirstYear
+    merged<- merged %>%
+      mutate(Consorted=case_when(ConFirstYear == 1 ~ "Yes",   
+                                ConFirstYear == 0 ~ "No"))
+    
+    plot17.2<- ggplot(merged,aes(x=Consorted,y=DeathAge,fill=Consorted))+
+      geom_boxplot()+
+      labs(x="Held consort in first year?",y="Age of death")+
+      theme_classic(base_size=10)+
+      scale_fill_manual(values=c("#D14E72FF","#8305A7FF"))
+      
+    plot17.2
     
     #plot Horn
     plot18<- ggplot(merged,aes(Horn,DeathAge))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      geom_point(aes(),col="#66C2A5",size=1,alpha=0.7)+                         
       labs(x="Horn Type",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE)
-    plot18
+                  col="#FC8D62",se=FALSE)
+    plot18  #this should be a bar chart
     
-    plot_mod23<- (plot15+plot16)/(plot17+plot18)
+    #finding average and SE for each horn type (death age)
+    sheepNormal<- sheep %>%
+      filter(Horn==3)
+    View(sheepNormal)
+    meanNormalDeath<- mean(sheepNormal$DeathAge)
+    meanNormalDeath
+    
+    SEnormalDeath<- std.error(sheepNormal$DeathAge)
+    SEnormalDeath
+    
+    sheepScurred<- sheep %>%
+      filter(Horn==1)
+    View(sheepScurred)
+    meanScurredDeath<- mean(sheepScurred$DeathAge)
+    meanScurredDeath
+    
+    SEscurredDeath<- std.error(sheepScurred$DeathAge)
+    SEscurredDeath
+    
+    HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
+    View(HornMeans)
+    
+    plot19<- ggplot(HornMeans,aes(HornType,MeanDeath,fill=HornType))+
+      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
+      labs(x="Horn Type",y="Average age of death")+
+      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#8305A7FF"))+
+      geom_errorbar(aes(ymin=MeanDeath-SEdeath,ymax=MeanDeath+SEdeath),width=.2,
+                    lwd=1,position=position_dodge(.9))
+    plot19
+    
+    
+    plot_mod23<- (plot15+plot16)/(plot17.2+plot19)
     plot_mod23
     
     show_col(viridis_pal(option="plasma")(20))
     show_col(viridis_pal(option="magma")(20))
     show_col(viridis_pal(option="inferno")(20))
     show_col(viridis_pal()(20))
+    display.brewer.pal(n = 8, name = 'Set2')
+    brewer.pal(n = 8, name = "Set2")
     
     plot_mod9
     plot_mod10

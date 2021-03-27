@@ -883,6 +883,18 @@ View(sheep)
    #weight decreases survival
    #VillTotal decreases survival
    
+   #same model but no interaction (and include ConFirstYear)
+   mod24<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal+SibCount+ConFirstYear,
+               data=merged,family=binomial)
+   summary(mod24)  #remove ConFirstYear
+   mod24.2<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal+SibCount,
+                 data=merged,family=binomial)
+   summary(mod24.2) #remove SibCount
+   mod24.3<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal,
+                 data=merged,family=binomial)
+   summary(mod24.3) #remove BolCirc
+   mod24.4<- glm(SurvivedFirstYear~Weight+VillTotal,data=merged,family=binomial)
+   summary(mod24.4)
    
    #mod20 same as 19 but count data
    mod20<- glm(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+
@@ -998,25 +1010,44 @@ View(sheep)
                  Weight*VillTotal,data=sheep,family=binomial)
     summary(mod21.3)
     #using geom_contour
-    plot7 <- ggplot(sheep,aes(x=VillTotal,y=Weight,z=SurvivedFirstYear))+
-      geom_density2d_filled(bins=20)+scale_fill_viridis(option="plasma",discrete=TRUE)+
+    ggplot(sheep,aes(x=VillTotal,y=Weight,z=SurvivedFirstYear))+
+      geom_density2d_filled(bins=20)+scale_fill_viridis(option="inferno",discrete=TRUE)+
       labs(x="Village Bay Population",y="August Weight \n(kg)",
       fill="First Year Survival")+theme_classic(base_size=10)
-    plot7 
-    
-    ggplot(sheep,aes(VillTotal,Weight,fill=SurvivedFirstYear))+
-      stat_density_2d( bins=11, geom = "polygon") +
-      scale_fill_viridis(option="plasma")
-    
-    ggplot(sheep, aes(VillTotal,Weight)) +
-      geom_tile(aes(fill=SurvivedFirstYear), colour = "white") +
-      scale_fill_gradient(low = "white", high = "red")
     
     #transform pop into categorical "high" or "low"
     sheep<- sheep %>%
-      mutate(PopType=case_when(VillTotal <450 ~ "Low",   
-                               VillTotal >=450 ~ "High"))
+      mutate(PopType=case_when(VillTotal <500 ~ "Low",   
+                               VillTotal >=500 ~ "High"))
     
+    #find average weights and SE for high and low pop
+    sheepLowPop<- sheep %>%
+      filter(PopType=="Low")
+    View(sheepLowPop)
+    
+    meanWeightLowPop<- mean(sheepLowPop$Weight,na.rm=TRUE)
+    meanWeightLowPop
+    meanSELowPop<- std.error(sheepLowPop$Weight,na.rm=TRUE)
+    meanSELowPop
+    
+    
+    sheepHighPop<- sheep %>%
+      filter(PopType=="High")
+    View(sheepHighPop)
+    
+    meanWeightHighPop<- mean(sheepHighPop$Weight,na.rm=TRUE)
+    meanWeightHighPop
+    meanSEHighPop<- std.error(sheepHighPop$Weight,na.rm=TRUE)
+    meanSEHighPop
+    
+    PopSizes <- read_excel("~/University/4th Year/Dissertation/PopSizes.xlsx")
+    View(PopSizes)
+    
+    plot7<- ggplot(PopSizes,aes(PopSize,MeanWeight))+
+      geom_bar(stat="identity",width=0.5)+
+      labs(x="Population size",y="Average Weight (kg)")+
+      theme_classic(base_size=10)
+    plot7
     
     #plot for success
     plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+
@@ -1190,6 +1221,31 @@ View(sheep)
     
     plot_mod23<- (plot15+plot16)/(plot17.2+plot19)
     plot_mod23
+    
+    #plot mod24
+    mod24.4<- glm(SurvivedFirstYear~Weight+VillTotal,data=merged,family=binomial)
+    summary(mod24.4)
+    
+    #plot for Weight
+    plot20<- ggplot(merged,aes(Weight,SurvivedFirstYear))+         
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.1)+                         
+      labs(x="Weight",y="Survived first year")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#8305A7FF",se=FALSE)
+    plot20
+    
+    #plot for VillTotal
+    plot21<- ggplot(merged,aes(VillTotal,SurvivedFirstYear))+         
+      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.1)+                         
+      labs(x="Village bay population",y="Survived first year")+     
+      theme_classic(base_size=10)+    
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#8305A7FF",se=FALSE)
+    plot21
+    
+    plot_mod24<- plot20+plot21
+    plot_mod24
     
     show_col(viridis_pal(option="plasma")(20))
     show_col(viridis_pal(option="magma")(20))

@@ -1175,7 +1175,7 @@ View(sheep)
     
     plot17.2<- ggplot(data=subset(merged, !is.na(Consorted)), 
       aes(x=Consorted,y=DeathAge,fill=Consorted))+
-      geom_boxplot()+
+      geom_boxplot(color="#737373")+
       labs(x="Held consort in first year?",y="Age of death")+
       theme_classic(base_size=10)+
       scale_fill_manual(values=c("#8DD3C7","#BC80BD"))
@@ -1213,7 +1213,7 @@ View(sheep)
     View(HornMeans)
     
     plot19<- ggplot(HornMeans,aes(HornType,MeanDeath,fill=HornType))+
-      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
+      geom_bar(stat="identity",width=0.5,color="#737373")+theme_classic(base_size=10)+
       labs(x="Horn Type",y="Age of death")+
       scale_fill_manual(name="Horn Type",values=c("#8DD3C7","#BC80BD"))+
       geom_errorbar(aes(ymin=MeanDeath-SEdeath,ymax=MeanDeath+SEdeath),width=.2,

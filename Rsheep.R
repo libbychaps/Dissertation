@@ -1141,51 +1141,53 @@ View(sheep)
     summary(mod23.5)
     #plot Lifetime Offspring
     plot15<- ggplot(merged,aes(LifetimeOffspring,DeathAge))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=0.7)+                         
       labs(x="Lifetime Breeding Success",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
+                  col="#BC80BD",se=FALSE) 
     plot15
     
     #plot first rut offspring
     plot16<- ggplot(merged,aes(CountOfFirstRutOffspring,DeathAge))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=0.7)+                         
       labs(x="Offspring in first year",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
+                  col="#BC80BD",se=FALSE) 
     plot16
     
     #plot Con First Year
     plot17<- ggplot(merged,aes(x=ConFirstYear,y=DeathAge))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=0.7)+                         
       labs(x="Consort in first year?",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
+                  col="#BC80BD",se=FALSE) 
     plot17
 
     #make categorical column for ConFirstYear
     merged<- merged %>%
       mutate(Consorted=case_when(ConFirstYear == 1 ~ "Yes",   
                                 ConFirstYear == 0 ~ "No"))
+    str(merged$ConFirstYear)
+    summary(merged$ConFirstYear)
     
-    plot17.2<- ggplot(merged,aes(x=Consorted,y=DeathAge,fill=Consorted))+
+    plot17.2<- ggplot(data=subset(merged, !is.na(Consorted)), 
+      aes(x=Consorted,y=DeathAge,fill=Consorted))+
       geom_boxplot()+
       labs(x="Held consort in first year?",y="Age of death")+
       theme_classic(base_size=10)+
-      scale_fill_manual(values=c("#D14E72FF","#8305A7FF"))
-      
+      scale_fill_manual(values=c("#8DD3C7","#BC80BD"))
     plot17.2
     
     #plot Horn
     plot18<- ggplot(merged,aes(Horn,DeathAge))+            
-      geom_point(aes(),col="#66C2A5",size=1,alpha=0.7)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=0.7)+                         
       labs(x="Horn Type",y="Age of Death")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#FC8D62",se=FALSE)
+                  col="#BC80BD",se=FALSE)
     plot18  #this should be a bar chart
     
     #finding average and SE for each horn type (death age)
@@ -1212,8 +1214,8 @@ View(sheep)
     
     plot19<- ggplot(HornMeans,aes(HornType,MeanDeath,fill=HornType))+
       geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
-      labs(x="Horn Type",y="Average age of death")+
-      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#8305A7FF"))+
+      labs(x="Horn Type",y="Age of death")+
+      scale_fill_manual(name="Horn Type",values=c("#8DD3C7","#BC80BD"))+
       geom_errorbar(aes(ymin=MeanDeath-SEdeath,ymax=MeanDeath+SEdeath),width=.2,
                     lwd=1,position=position_dodge(.9))
     plot19
@@ -1228,20 +1230,20 @@ View(sheep)
     
     #plot for Weight
     plot20<- ggplot(merged,aes(Weight,SurvivedFirstYear))+         
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.1)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=0.1)+                         
       labs(x="Weight",y="Survived first year")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="binomial"),
-                  col="#8305A7FF",se=FALSE)
+                  col="#BC80BD",se=FALSE)
     plot20
     
     #plot for VillTotal
     plot21<- ggplot(merged,aes(VillTotal,SurvivedFirstYear))+         
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.1)+                         
+      geom_point(aes(),col="#8DD3C7",size=1,alpha=1)+                         
       labs(x="Village bay population",y="Survived first year")+     
       theme_classic(base_size=10)+    
       stat_smooth(method="glm",method.args=list(family="binomial"),
-                  col="#8305A7FF",se=FALSE)
+                  col="#BC80BD",se=FALSE)
     plot21
     
     plot_mod24<- plot20+plot21
@@ -1253,6 +1255,11 @@ View(sheep)
     show_col(viridis_pal()(20))
     display.brewer.pal(n = 8, name = 'Set2')
     brewer.pal(n = 8, name = "Set2")
+    display.brewer.pal(n=10,name="Set3")
+    brewer.pal(n=10,name="Set3")
+    display.brewer.pal(n=8,name="Greys")
+    brewer.pal(n=8,name="Greys")
+    
     
     plot_mod9
     plot_mod10

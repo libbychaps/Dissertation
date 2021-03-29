@@ -123,13 +123,7 @@ View(consorts)
   summary(modA.4)
   
 
-  #remove EweAge
-  modA.2<- glm(success~ConFirstYear+VillTotal+Weight+BolCirc,
-               data=merged,family=binomial)
-  summary(modA.2)  #remove ConFirstYear 
-  modA.3<- glm(success~VillTotal+Weight+BolCirc,
-               data=merged,family=binomial)
-  summary(modA.3)
+  
   
   #what predicts appearance in the rut?
   modB<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+EweAge+Horn+Hindleg+VillTotal*Weight,

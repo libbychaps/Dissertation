@@ -18,6 +18,11 @@ View(consorts)
   consorts<- consorts %>% 
     mutate(EweAge = ObsYear-EweBirthyear)
   
+  #create column for ewe lamb or not
+  consorts<- consorts %>%
+    mutate(EweLamb = case_when(EweAge == 0 ~ 1,  #assigns 1 to ewe lambs
+                               EweAge >= 1 ~ 0)) #assigns 0 to older ewes
+  
   #counting number of consorts held by first year rams
   NumConFirstYear<- table(consorts$ConFirstYear)[names(table(consorts$ConFirstYear)) == 1] #count first year consorts
   NumConFirstYear #333 consorts held by first year rams 
@@ -100,12 +105,25 @@ View(consorts)
   abline(lm(merged$EweAge~merged$ConAge),col="red",lwd=3)
   cor.test(merged$EweAge,merged$ConAge,method="pearson")
   #inc ConAge positively correlates with EweAge
-  
+ 
+ 
 # 5. Modelling relationships
   #relationship between consorting and success
-  modA<- glm(success~ConFirstYear+VillTotal+EweAge+Weight+BolCirc,
+  modA<- glm(success~ConFirstYear+VillTotal+EweAge+Weight+BolCirc+EweLamb,
              data=merged,family=binomial)
   summary(modA) #remove EweAge
+  modA.2<- glm(success~ConFirstYear+VillTotal+Weight+BolCirc+EweLamb,
+               data=merged,family=binomial)
+  summary(modA.2) #remove ConFirstYear
+  modA.3<- glm(success~VillTotal+Weight+BolCirc+EweLamb,
+               data=merged,family=binomial)
+  summary(modA.3) #remove EweLamb
+  modA.4<- glm(success~VillTotal+Weight+BolCirc,
+               data=merged,family=binomial)
+  summary(modA.4)
+  
+
+  #remove EweAge
   modA.2<- glm(success~ConFirstYear+VillTotal+Weight+BolCirc,
                data=merged,family=binomial)
   summary(modA.2)  #remove ConFirstYear 
@@ -129,7 +147,29 @@ View(consorts)
   modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
                data=merged,family=binomial)
   summary(modB.5)  #effect sizes significant but very small - biologically important???
-
+  
+  #same as modB but dont include interaction
+  modC<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+EweAge+Horn+Hindleg,
+             data=merged,family=binomial)
+  summary(modC) #remove EweAge
+  modC.2<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+Horn+Hindleg,
+               data=merged,family=binomial)
+  summary(modC.2) #remove Weight
+  modC.3<- glm(ConFirstYear~VillTotal+BolCirc+SibCount+Horn+Hindleg,
+               data=merged,family=binomial)
+  summary(modC.3) #remove Horn
+  modC.4<- glm(ConFirstYear~VillTotal+BolCirc+SibCount+Hindleg,
+               data=merged,family=binomial)
+  summary(modC.4) #remove BolCirc
+  modC.5<- glm(ConFirstYear~VillTotal+SibCount+Hindleg,
+               data=merged,family=binomial)
+  summary(modC.5) #remove VillTotal
+  modC.6<- glm(ConFirstYear~SibCount+Hindleg,
+               data=merged,family=binomial)
+  summary(modC.6) #remove sibcount
+  modC.7<- glm(ConFirstYear~Hindleg,data=merged,family=binomial)
+  summary(modC.7)
+  
 # --------- PLOTTING --------
   modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
                data=merged,family=binomial)

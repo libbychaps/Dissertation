@@ -1052,6 +1052,14 @@ str(sheep)
     #plot in base R
     plot(Weight~SurvivedFirstYear,data=sheep,col=as.factor(PopType))
     
+    PopType1 <- filter(sheep,PopType == 1)
+    PopType0 <- filter(sheep,PopType == 0)
+    
+    oop<- ggplot(sheep,aes=(x=Weight,y=SurvivedFirstYear),color=PopType))+
+      geom_point()+
+      geom_smooth(method="NULL",data=PopType1)+
+      geom_smooth(method="NULL",data=PopType0)
+    
     
     
 ###--------------------------------------------------------------------------------###

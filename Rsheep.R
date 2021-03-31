@@ -24,6 +24,7 @@ library(plotrix)
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
 View(sheep)
+str(sheep)
 
 ### 1. Summary statistics and df manipulation ###
 
@@ -111,6 +112,7 @@ View(sheep)
   summary(sheep$VillRamLamb)
   countramlamb = 2047
 
+#-------------------------------------------------------------------------------
   #replace NA with 0 for CountOfFirstRutOffspring
   sheep$CountOfFirstRutOffspring[is.na(sheep$CountOfFirstRutOffspring)] <- 0
   
@@ -125,6 +127,7 @@ View(sheep)
   #create column for sired offspring yes/no
   sheep$success = sheep$CountOfFirstRutOffspring #duplicates CountOfFirstRutOffspring column
   sheep$success[sheep$success >0]<- 1            #makes column binary 1/0
+#---------------------------------------------------------------------------------------------
   
   #calculate proportion sired each year
   #1986
@@ -687,17 +690,24 @@ View(sheep)
   
   plot(DeathYear~LifetimeOffspring,data=sheep)
   abline(lm(sheep$DeathYear~sheep$LifetimeOffspring),col="red",lwd=3)
+
+  #-------------------------------------------------------------------------------  
   
-  # ^^^ death year doesn't tell us anything? should look at death age
-  #create column for age at death
+  #create column for age at death (Matt's code)
+  sheep$DeathAge <- with(sheep, DeathYear - BirthYear)
+  #create column for SurvivedFirstYear (Matt's code)
+  sheep$SurvivedFirstYear <- ifelse(sheep$DeathAge ==1,0, 1)
+  
+  #create column for age at death (My code)
   sheep<- sheep %>% 
     mutate(DeathAge = DeathYear-BirthYear)
-  
-  #create binary column if died in first year
+  #create column for SurvivedFirstYear (My code)
   sheep<- sheep %>%
     mutate(SurvivedFirstYear = case_when(DeathAge == 1 ~ 0,   #gives 0 to all individuals that died in their first year
                                          DeathAge >= 2 ~ 1))  #gives 1 to all individuals that survived their first year
   str(sheep$SurvivedFirstYear)
+  
+  #--------------------------------------------------------------------------------------
   
   plot(SurvivedFirstYear~success,data=sheep)
   abline(lm(sheep$SurvivedFirstYear~sheep$success),col="red",lwd=3)
@@ -1017,19 +1027,21 @@ View(sheep)
     median(sheep$VillTotal,na.rm=FALSE) #median pop size is 494
     
     sheep<- sheep %>%
-      mutate(PopType=case_when(VillTotal <494 ~ "Low",   
-                               VillTotal >=494 ~ "High"))
-    sheep<- as.factor(sheep$PopType)
+      mutate(PopType=case_when(VillTotal <494 ~ 0,   
+                               VillTotal >=494 ~ 1))
+    
     
 ###---------------------------------------------------------------------------------###
-    #re-run mod21 with population as categorical
+   
+     #re-run mod21 with population as categorical
     mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                     Weight*VillTotal,data=sheep,family=binomial)
     summary(mod21.3)
     
     mod21.5<- glm(SurvivedFirstYear~success+Weight+PopType+
-                     Weight*PopType,data=sheep,family=binomial)
+                    Weight*PopType,data=sheep,family=binomial)
     summary(mod21.5)
+    
     
 ###--------------------------------------------------------------------------------###
     
@@ -1252,8 +1264,5 @@ View(sheep)
     plot_mod21
     plot_mod22
     
-    
-    #from katie in meeting
-    stat_smooth(method="glm", method.args=list(family="binomial"), col = "red", se=FALSE)
     
   

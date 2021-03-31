@@ -917,7 +917,7 @@ str(sheep)
  
 # ------------------  7. PLOTTING  -------------------------
   
-   #plot model 9.4
+#plot model 9.4
      mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
      summary(mod9.4)
      #plot in base R
@@ -925,15 +925,16 @@ str(sheep)
      abline(lm(sheep$success~sheep$VillTotal),col="red",lwd=3)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
-     plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             #creates base plot
-         geom_point(aes(),col="#66C2A5",size=2)+                         #adds data points, diff colours for success/not
-         labs(x="Village Bay Population",y="First Year \nBreeding Success")+     #adds labels to X and Y axes
-         theme_classic(base_size=10)+    #changes background colour
-         stat_smooth(method="glm",method.args=list(family="binomial"),col="#FC8D62",se=FALSE)
-         plot_mod9  #view plot
+     plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             
+         geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.7)+                         
+         labs(x="Village Bay Population",y="First Year \nBreeding Success")+     
+         theme_classic(base_size=10)+    
+         stat_smooth(method="glm",method.args=list(family="binomial"),
+            col="#525252",se=FALSE)
+     plot_mod9  #view plot
      
   
-   #plotting mod10.5
+#plotting mod10.5
      mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
      summary(mod10.5)  
      #plot in base R
@@ -946,34 +947,122 @@ str(sheep)
      
      #plot using ggplot2
      plot_mod10<- ggplot(sheep,aes(VillTotal,success))+                         #creates base plot
-       geom_point(aes(col=TwinStatus),size=1)+                                         #adds points based on twin status
-       scale_color_manual(values=c("Singleton"="#55c667ff","Twin"="#39568cff"))+    #changes colour of points
+       geom_point(aes(col=TwinStatus),size=1.5,alpha=0.7)+                                         #adds points based on twin status
+       scale_color_manual(values=c("Singleton"="#BDBDBD","Twin"="#525252"))+    #changes colour of points
        labs(x="Village Bay Population",y="First Year Breeding \nSuccess")+  #adds labels to X and Y axes
        labs(color="Twin Status")+theme_classic(base_size=10)+ 
-       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)
      plot_mod10      #view plot
    
-   #plot mod11
+#plot mod11
      mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
      summary(mod11.9)
      #plot VillTotal
      p1<- ggplot(sheep,aes(VillTotal,success))+
-       geom_point(aes(),col="#3cbb75ff",size=1)+
-       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
+       geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.2)+
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
        labs(x="Village Bay Population",y="First Year Breeding Success")+
        theme_classic(base_size=10)
      p1 
      #plot BolCirc
      p2<- ggplot(sheep,aes(BolCirc,success))+
-       geom_point(col="#3cbb75ff",size=1))+
-       stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
-       labs(x="Testes Circumference (mm)",y="")+
+       geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.2)+
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
+       labs(x="Testes circumference (mm)",y="First Year Breeding Success")+
        theme_classic(base_size=10)
      p2
+    
      #plot side by side
      plot_mod11<- p1 + p2
      plot_mod11
    
+##plotting mod22
+     mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
+                     data=sheep,family=poisson)
+     summary(mod22.3)
+     #plot BolCirc
+     plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
+       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
+       labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
+       theme_classic(base_size=10)+    
+       stat_smooth(method="glm",method.args=list(family="poisson"),
+                   col="#525252",se=FALSE) 
+     plot9
+     #plot Weight
+     plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
+       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
+       labs(x="August weight (kg)",y="Subsequent offspring")+     
+       theme_classic(base_size=10)+    
+       stat_smooth(method="glm",method.args=list(family="poisson"),
+                   col="#525252",se=FALSE) 
+     plot10
+     #plotVillTotal
+     plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
+       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
+       labs(x="Village Bay population",y="Subsequent offspring")+     
+       theme_classic(base_size=10)+    
+       stat_smooth(method="glm",method.args=list(family="poisson"),
+                   col="#525252",se=FALSE) 
+     plot11
+     
+     #make categorical column for horn type
+     sheep<- sheep %>%
+       mutate(HornType=case_when(Horn == 3 ~ "Normal",   
+                                 Horn == 1 ~ "Scurred"))
+     #plot Horn (bar chart)
+     #finding average and SE for each horn type
+     sheepNormal<- sheep %>%
+       filter(Horn==3)
+     View(sheepNormal)
+     meanNormalSubs<- mean(sheepNormal$SubsOffspring)
+     meanNormalSubs
+     
+     SEnormal<- std.error(sheepNormal$SubsOffspring)
+     SEnormal
+     
+     sheepScurred<- sheep %>%
+       filter(Horn==1)
+     View(sheepScurred)
+     meanScurredSubs<- mean(sheepScurred$SubsOffspring)
+     meanScurredSubs
+     
+     SEscurred<- std.error(sheepScurred$SubsOffspring)
+     SEscurred
+     
+     HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
+     View(HornMeans)
+     
+     plot14<- ggplot(HornMeans,aes(HornType,MeanSubsOff,fill=HornType))+
+       geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
+       labs(x="Horn Type",y="Subsequent Offspring")+
+       scale_fill_manual(name="Horn Type",values=c("#BDBDBD","#737373"))+
+       geom_errorbar(aes(ymin=MeanSubsOff-SE,ymax=MeanSubsOff+SE),width=.2,
+                     lwd=1,position=position_dodge(.9))
+     plot14
+     
+     #combine plots
+     plot_mod22<- (plot9+plot10)/(plot11+plot14)
+     plot_mod22
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
    #plot mod15
      mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
      summary(mod15.8)
@@ -1073,79 +1162,6 @@ str(sheep)
     plot_mod21
     
     
-    #plot_mod22
-    mod22.3<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
-                    data=sheep,family=poisson)
-    summary(mod22.3)
-    #plot BolCirc
-    plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
-      labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
-      theme_classic(base_size=10)+    
-      stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
-    plot9
-    #plot Weight
-    plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
-      labs(x="August weight (kg)",y="Subsequent offspring")+     
-      theme_classic(base_size=10)+    
-      stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
-    plot10
-    #plotVillTotal
-    plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
-      geom_point(aes(),col="#D14E72FF",size=1,alpha=0.7)+                         
-      labs(x="Village Bay population",y="Subsequent offspring")+     
-      theme_classic(base_size=10)+    
-      stat_smooth(method="glm",method.args=list(family="poisson"),
-                  col="#8305A7FF",se=FALSE) 
-    plot11
-    
-    #make categorical column for horn type
-    sheep<- sheep %>%
-      mutate(HornType=case_when(Horn == 3 ~ "Normal",   
-                                Horn == 1 ~ "Scurred"))
-    #plot Horn (bar chart)
-    plot12<- ggplot(data=sheep,aes(HornType,SubsOffspring,fill=HornType)) +
-      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
-      labs(x="Horn Type",y="Subsequent Offspring")+
-      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#5901A5FF","#FEB72DFF"))
-    plot12
-    
-    #finding average and SE for each horn type
-    sheepNormal<- sheep %>%
-      filter(Horn==3)
-    View(sheepNormal)
-    meanNormalSubs<- mean(sheepNormal$SubsOffspring)
-    meanNormalSubs
-    
-    SEnormal<- std.error(sheepNormal$SubsOffspring)
-    SEnormal
-    
-    sheepScurred<- sheep %>%
-      filter(Horn==1)
-    View(sheepScurred)
-    meanScurredSubs<- mean(sheepScurred$SubsOffspring)
-    meanScurredSubs
-    
-    SEscurred<- std.error(sheepScurred$SubsOffspring)
-    SEscurred
-    
-    HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
-    View(HornMeans)
-    
-    plot14<- ggplot(HornMeans,aes(HornType,MeanSubsOff,fill=HornType))+
-      geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
-      labs(x="Horn Type",y="Subsequent Offspring")+
-      scale_fill_manual(name="Horn Type",values=c("#D14E72FF","#8305A7FF"))+
-      geom_errorbar(aes(ymin=MeanSubsOff-SE,ymax=MeanSubsOff+SE),width=.2,
-                    lwd=1,position=position_dodge(.9))
-    plot14
-    
-    #combine plots
-    plot_mod22<- (plot9+plot10)/(plot11+plot14)
-    plot_mod22
     
     #plot_mod23
     mod23.5<- glm(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+

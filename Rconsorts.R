@@ -140,39 +140,15 @@ View(consorts)
   summary(modB.4) #remove Horn
   modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
                data=merged,family=binomial)
-  summary(modB.5)  #effect sizes significant but very small - biologically important???
+  summary(modB.5)  #remove BolCirc
+  modB.6<- glm(ConFirstYear~VillTotal+Weight+VillTotal*Weight,
+               data=merged,family=binomial)
+  summary(modB.6)
   
-  #same as modB but dont include interaction
-  modC<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+EweAge+Horn+Hindleg,
+  #re-do modB with categorical PopType (for plotting)
+  modC<- glm(ConFirstYear~PopType+Weight+PopType*Weight,
              data=merged,family=binomial)
-  summary(modC) #remove EweAge
-  modC.2<- glm(ConFirstYear~VillTotal+Weight+BolCirc+SibCount+Horn+Hindleg,
-               data=merged,family=binomial)
-  summary(modC.2) #remove Weight
-  modC.3<- glm(ConFirstYear~VillTotal+BolCirc+SibCount+Horn+Hindleg,
-               data=merged,family=binomial)
-  summary(modC.3) #remove Horn
-  modC.4<- glm(ConFirstYear~VillTotal+BolCirc+SibCount+Hindleg,
-               data=merged,family=binomial)
-  summary(modC.4) #remove BolCirc
-  modC.5<- glm(ConFirstYear~VillTotal+SibCount+Hindleg,
-               data=merged,family=binomial)
-  summary(modC.5) #remove VillTotal
-  modC.6<- glm(ConFirstYear~SibCount+Hindleg,
-               data=merged,family=binomial)
-  summary(modC.6) #remove sibcount
-  modC.7<- glm(ConFirstYear~Hindleg,data=merged,family=binomial)
-  summary(modC.7)
+  summary(modC)
   
 # --------- PLOTTING --------
-  modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+VillTotal*Weight,
-               data=merged,family=binomial)
-  summary(modB.5)
-  #plot bol circ
-  plotA<- ggplot(merged,aes(BolCirc,ConFirstYear))+
-    geom_point(col="#3cbb75ff",size=1)+
-    geom_smooth(method=glm,se=FALSE,col="#440154FF")+
-    labs(x="Testes circumference (mm)",y="First year consort")+
-    theme_classic(base_size=10)
-  plotA
   

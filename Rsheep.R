@@ -695,10 +695,8 @@ View(sheep)
   
   #create binary column if died in first year
   sheep<- sheep %>%
-    mutate(SurvivedFirstYear = case_when(DeathAge == 1 ~ "0",   #gives 0 to all individuals that died in their first year
-                                         DeathAge >= 2 ~ "1"))  #gives 1 to all individuals that survived their first year
-  str(sheep$SurvivedFirstYear)
-  sheep$SurvivedFirstYear<-as.numeric(sheep$SurvivedFirstYear)  #format as number
+    mutate(SurvivedFirstYear = case_when(DeathAge == 1 ~ 0,   #gives 0 to all individuals that died in their first year
+                                         DeathAge >= 2 ~ 1))  #gives 1 to all individuals that survived their first year
   str(sheep$SurvivedFirstYear)
   
   plot(SurvivedFirstYear~success,data=sheep)
@@ -876,7 +874,7 @@ View(sheep)
    summary(mod21.2) #weight least sig but keep for interaction, remove BolCirc
    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                    Weight*VillTotal,data=sheep,family=binomial)
-   summary(mod21.3)
+   summary(mod21.3) #try removing interaction
    mod21.4<- glm(SurvivedFirstYear~success+Weight+VillTotal,data=sheep,family=binomial)
    summary(mod21.4)
    #success increases survival
@@ -1016,38 +1014,24 @@ View(sheep)
       fill="First Year Survival")+theme_classic(base_size=10)
     
     #transform pop into categorical "high" or "low"
+    median(sheep$VillTotal,na.rm=FALSE) #median pop size is 494
+    
     sheep<- sheep %>%
-      mutate(PopType=case_when(VillTotal <500 ~ "Low",   
-                               VillTotal >=500 ~ "High"))
+      mutate(PopType=case_when(VillTotal <494 ~ "Low",   
+                               VillTotal >=494 ~ "High"))
+    sheep<- as.factor(sheep$PopType)
     
-    #find average weights and SE for high and low pop
-    sheepLowPop<- sheep %>%
-      filter(PopType=="Low")
-    View(sheepLowPop)
+###---------------------------------------------------------------------------------###
+    #re-run mod21 with population as categorical
+    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+                    Weight*VillTotal,data=sheep,family=binomial)
+    summary(mod21.3)
     
-    meanWeightLowPop<- mean(sheepLowPop$Weight,na.rm=TRUE)
-    meanWeightLowPop
-    meanSELowPop<- std.error(sheepLowPop$Weight,na.rm=TRUE)
-    meanSELowPop
+    mod21.5<- glm(SurvivedFirstYear~success+Weight+PopType+
+                     Weight*PopType,data=sheep,family=binomial)
+    summary(mod21.5)
     
-    
-    sheepHighPop<- sheep %>%
-      filter(PopType=="High")
-    View(sheepHighPop)
-    
-    meanWeightHighPop<- mean(sheepHighPop$Weight,na.rm=TRUE)
-    meanWeightHighPop
-    meanSEHighPop<- std.error(sheepHighPop$Weight,na.rm=TRUE)
-    meanSEHighPop
-    
-    PopSizes <- read_excel("~/University/4th Year/Dissertation/PopSizes.xlsx")
-    View(PopSizes)
-    
-    plot7<- ggplot(PopSizes,aes(PopSize,MeanWeight))+
-      geom_bar(stat="identity",width=0.5)+
-      labs(x="Population size",y="Average Weight (kg)")+
-      theme_classic(base_size=10)
-    plot7
+###--------------------------------------------------------------------------------###
     
     #plot for success
     plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+

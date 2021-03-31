@@ -1042,6 +1042,17 @@ str(sheep)
                     Weight*PopType,data=sheep,family=binomial)
     summary(mod21.5)
     
+    #using code from hawthorn project to plot
+    table(sheep$PopType) #shows how many cases there are of high (1) and low (0) pop
+    
+    #create table of coefficients to use when plotting
+    cf<- summary(mod21.5)$coefficients
+    cf
+    
+    #plot in base R
+    plot(Weight~SurvivedFirstYear,data=sheep,col=as.factor(PopType))
+    
+    
     
 ###--------------------------------------------------------------------------------###
     

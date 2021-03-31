@@ -758,7 +758,7 @@ str(sheep)
    mod15<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                    Weight+LifetimeOffspring*CountOfFirstRutOffspring+
                    (1|BirthYear),data=sheep,family=poisson) 
-   summary(mod13) #everything significant except first rut offspring 
+   summary(mod15) 
    #add (1|DeathYear)
    mod15.2<- glmer(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+
                    Weight+LifetimeOffspring*CountOfFirstRutOffspring+
@@ -965,7 +965,7 @@ str(sheep)
      p1 
      #plot BolCirc
      p2<- ggplot(sheep,aes(BolCirc,success))+
-       geom_point(col="#3cbb75ff",size=1)+
+       geom_point(col="#3cbb75ff",size=1))+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
        labs(x="Testes Circumference (mm)",y="")+
        theme_classic(base_size=10)

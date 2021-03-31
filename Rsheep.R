@@ -1052,8 +1052,11 @@ str(sheep)
     #plot in base R
     plot(Weight~SurvivedFirstYear,data=sheep,col=as.factor(PopType))
     
-    
-    
+    plot7<- ggplot(sheep,aes(Weight,SurvivedFirstYear,col=PopType))+
+      geom_point(aes(),size=1)+
+      stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
+      theme_classic(base_size=10)
+    plot7
     
     
 ###--------------------------------------------------------------------------------###

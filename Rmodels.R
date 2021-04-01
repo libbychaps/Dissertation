@@ -3,12 +3,12 @@
   # mod10: SibCount and VillTotal decrease success 
   # mod11: BolCirc increases success, VillTotal decreaases (Aug catch animals)
 
- mod9.6<- glm(success~VillTotal,data=sheep,family=binomial)
- summary(mod9.6) 
+ mod9.3<- glm(success~VillTotal,data=sheep,family=binomial)
+ summary(mod9.3) 
  plot_mod9
  
- mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
- summary(mod10.5)
+ mod10.4<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
+ summary(mod10.4)
  plot_mod10
 
  mod11.12<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)

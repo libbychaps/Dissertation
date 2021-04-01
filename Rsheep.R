@@ -491,78 +491,50 @@ str(sheep)
 
 ### 4. Final models (First year success) ###
   #Model for mother known (binary data)
-    mod9<- glmer(success~MumKnown+VillTotal+ratio+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod9)
-    #warning message says model is nearly unidentifiable???
-    #ratio is not significant here
-    mod9.2<- glmer(success~MumKnown+VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod9.2)
-    #MumKnown not significant
-    mod9.3<- glmer(success~VillTotal+(1|BirthYear),data=sheep,family=binomial)
+    mod9<- glm(success~MumKnown+VillTotal+ratio,data=sheep,family=binomial)
+    summary(mod9) #remove MumKnown
+    mod9.2<- glm(success~VillTotal+ratio,data=sheep,family=binomial)
+    summary(mod9.2) #remove ratio
+    mod9.3<- glm(success~VillTotal,data=sheep,family=binomial)
     summary(mod9.3)
-    #try rescaling variables
-    mod9.4<- glmer(success~scale(VillTotal)+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod9.4)#gets rid of error, changes result?
-    #remove birth year
-    mod9.5<- glm(success~scale(VillTotal),data=sheep,family=binomial)
-    summary(mod9.5)
-    mod9.6<- glm(success~VillTotal,data=sheep,family=binomial)
-    summary(mod9.6)
-    #check model performance
-    model_performance(mod9.5) #unsure what this tells us
-    #check r2
-    r2(mod9.5)
-    check_model(mod9.5)
     
   #Model for horn type and twin status (binary data)
-    mod10<- glmer(success~SibCount+Horn+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod10)  #Horn least significant
-    mod10.2<- glmer(success~SibCount+VillTotal+MumKnown+ratio+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod10.2)  #MumKnown least significant
-    mod10.3<- glmer(success~SibCount+VillTotal+ratio+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod10.3)  #ratio least significant
-    mod10.4<- glmer(success~SibCount+VillTotal+(1|BirthYear),data=sheep,family=binomial)
+    mod10<- glm(success~SibCount+Horn+VillTotal+MumKnown+ratio,data=sheep,family=binomial)
+    summary(mod10) #remove Horn
+    mod10.2<- glm(success~SibCount+VillTotal+MumKnown+ratio,data=sheep,family=binomial)
+    summary(mod10.2) #remove MumKnown
+    mod10.3<- glm(success~SibCount+VillTotal+ratio,data=sheep,family=binomial)
+    summary(mod10.3) #remove ratio
+    mod10.4<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
     summary(mod10.4)
-    #remove (1|BirthYear)
-    mod10.5<- glm(success~SibCount+VillTotal,data=sheep,family=binomial)
-    summary(mod10.5) 
-    check_model(mod10.5)
     
   #Model for Aug catch animals (binary data)
     mod11<- glm(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
                     ratio+Weight*VillTotal,data=sheep,family=binomial)
-    summary(mod11)   #none significant - remove terms one at a time (first HindLeg)
-    mod11.2<- glmer(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
-                    ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.2) #Horn least significant
-    mod11.3<- glmer(success~Weight+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
-                    ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.3) #BolLen least significant
-    mod11.4<- glmer(success~Weight+HornLen+HornCirc+BolCirc+SibCount+VillTotal+
-                    ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.4) #HornCirc least significant
-    mod11.5<- glmer(success~Weight+HornLen+BolCirc+SibCount+VillTotal+
-                    ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.5) #BolCirc becomes significant, Weight least significant
-    mod11.6<- glmer(success~HornLen+BolCirc+SibCount+VillTotal+ratio+
-                    Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.6) #remove ratio
-    mod11.7<- glmer(success~HornLen+BolCirc+SibCount+VillTotal+Weight+Weight*VillTotal+
-                      (1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.7) #remove HornLen
-    mod11.8<- glmer(success~BolCirc+SibCount+VillTotal+Weight+Weight*VillTotal+
-                      (1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.8) #remove SibCount
-    mod11.9<- glmer(success~BolCirc+VillTotal+Weight+Weight*VillTotal+
-                      (1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.9) #remove interaction
-    mod11.10<- glmer(success~BolCirc+VillTotal+Weight+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.10)   #remove weight
-    mod11.11<- glmer(success~BolCirc+VillTotal+(1|BirthYear),data=sheep,family=binomial)
-    summary(mod11.11) #remove (1|BirthYear)
-    mod11.12<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
-    summary(mod11.12)
-    #including an interaction does not change minimal model
+    summary(mod11)   #remove hindleg
+    mod11.2<- glm(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+ratio+
+                    Weight*VillTotal,data=sheep,family=binomial)
+    summary(mod11.2) #remove Horn
+    mod11.3<- glm(success~Weight+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+ratio+
+                    Weight*VillTotal,data=sheep,family=binomial)
+    summary(mod11.3) #remove BolLen
+    mod11.4<- glm(success~Weight+HornLen+HornCirc+BolCirc+SibCount+VillTotal+ratio+
+                    Weight*VillTotal,data=sheep,family=binomial)
+    summary(mod11.4) #remove SibCount
+    mod11.5<- glm(success~Weight+HornLen+HornCirc+BolCirc+VillTotal+ratio+
+                    Weight*VillTotal,data=sheep,family=binomial)
+    summary(mod11.5) #remove HornCirc
+    mod11.6<- glm(success~Weight+HornLen+BolCirc+VillTotal+ratio+Weight*VillTotal,
+                  data=sheep,family=binomial)
+    summary(mod11.6) #remove HornLen
+    mod11.7<- glm(success~Weight+BolCirc+VillTotal+ratio+Weight*VillTotal,
+                  data=sheep,family=binomial)
+    summary(mod11.7) #remove ratio
+    mod11.8<- glm(success~Weight+BolCirc+VillTotal+Weight*VillTotal,
+                  data=sheep,family=binomial)
+    summary(mod11.8) #remove weight
+    mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
+    summary(mod11.9)
     
     #repeat this model using an interaction between VillTotal and BolCirc
     mod19<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
@@ -870,6 +842,9 @@ str(sheep)
    summary(mod22) #remove SibCount
    mod22.2<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
    summary(mod22.2)
+   check_overdispersion(mod22)
+   check_zeroinflation(mod22)
+   check_model(mod22)
    
    #same model but including interaction term
    mod22.3<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+

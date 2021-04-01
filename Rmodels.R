@@ -21,8 +21,8 @@
  #FUTURE REPRO
   # mod22: bolCirc, weight and horn increase subsequent offspring, villtotal decreases
 
- mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,data=sheep,family=binomial)
- summary(mod21.3) 
+ mod21.4<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,data=merged,family=binomial)
+ summary(mod21.4)
  
  mod22.4<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+Weight*VillTotal,
                data=sheep,family=poisson)

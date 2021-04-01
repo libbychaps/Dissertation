@@ -856,30 +856,20 @@ str(sheep)
    
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
-                   Weight*VillTotal,data=sheep,family=binomial)
-   summary(mod21) #remove SibCount
-   mod21.2<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
-                   Weight*VillTotal,data=sheep,family=binomial)
-   summary(mod21.2) #weight least sig but keep for interaction, remove BolCirc
-   mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
-                   Weight*VillTotal,data=sheep,family=binomial)
-   summary(mod21.3) 
+                 ConFirstYear+Weight*VillTotal,data=merged,family=binomial)
+   summary(mod21) #warning message but seems to work fine - remove ConFirstYear
+   mod21.2<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
+                   Weight*VillTotal,data=merged,family=binomial)
+   summary(mod21.2) #remove SibCount
+   mod21.3<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
+                   Weight*VillTotal,data=merged,family=binomial)
+   summary(mod21.3) #remove BolCirc
+   mod21.4<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,
+                 data=merged,family=binomial)
+   summary(mod21.4)
    #success increases survival
    #weight decreases survival
    #VillTotal decreases survival
-   
-   #same model but no interaction (and include ConFirstYear)
-   mod24<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal+SibCount+ConFirstYear,
-               data=merged,family=binomial)
-   summary(mod24)  #remove ConFirstYear
-   mod24.2<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal+SibCount,
-                 data=merged,family=binomial)
-   summary(mod24.2) #remove SibCount
-   mod24.3<- glm(SurvivedFirstYear~Weight+BolCirc+VillTotal,
-                 data=merged,family=binomial)
-   summary(mod24.3) #remove BolCirc
-   mod24.4<- glm(SurvivedFirstYear~Weight+VillTotal,data=merged,family=binomial)
-   summary(mod24.4)
    
    #mod20 same as 19 but count data
    mod20<- glm(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+

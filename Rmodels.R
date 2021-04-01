@@ -17,32 +17,22 @@
  
 # 2. How does first year reproduction relate to future survival and reproduction?
  #SURVIVAL
-  # mod23: Lifetime offspring inc death age, count of first rut offspring, horn and con in first year decrease death age
   # mod24: Weight increases first year survival, population decreases survival
  #FUTURE REPRO
   # mod22: bolCirc, weight and horn increase subsequent offspring, villtotal decreases
+
+ mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,data=sheep,family=binomial)
+ summary(mod21.3) 
  
- mod23.5<- glm(DeathAge~LifetimeOffspring+CountOfFirstRutOffspring+Horn+ConFirstYear,
-               data=merged,family=poisson)
- summary(mod23.5)
- plot_mod23
- 
- mod24.4<- glm(SurvivedFirstYear~Weight+VillTotal,data=merged,family=binomial)
- summary(mod24.4)
- plot_mod24
- 
- mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
- summary(mod22.3)
- plot_mod22
- 
- 
+ mod22.4<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+Weight*VillTotal,
+               data=sheep,family=poisson)
+ summary(mod22.4)
  
  
 # 3. Is holding a consort associated with the success of ram lambs?
   # modA: holding a consort does not affect success in first year
  
- modA.4<- glm(success~VillTotal+Weight+BolCirc,
-              data=merged,family=binomial)
+ modA.4<- glm(success~VillTotal+Weight+BolCirc,data=merged,family=binomial)
  summary(modA.4)
  #ConFirstYear was removed from maximal model because insignificant
 
@@ -53,7 +43,4 @@
  summary(modB.5) 
  plotA
  
- #without interaction
- modC.7<- glm(ConFirstYear~Hindleg,data=merged,family=binomial)
- summary(modC.7)
  

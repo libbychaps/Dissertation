@@ -529,8 +529,8 @@ str(sheep)
     check_model(mod10.5)
     
   #Model for Aug catch animals (binary data)
-    mod11<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
-                    ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
+    mod11<- glm(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
+                    ratio+Weight*VillTotal,data=sheep,family=binomial)
     summary(mod11)   #none significant - remove terms one at a time (first HindLeg)
     mod11.2<- glmer(success~Weight+Horn+HornLen+HornCirc+BolLen+BolCirc+SibCount+VillTotal+
                     ratio+Weight*VillTotal+(1|BirthYear),data=sheep,family=binomial)
@@ -865,15 +865,19 @@ str(sheep)
    
    #re-do mod17 with subsequent offspring 
    hist(sheep$SubsOffspring,breaks=70)
-   mod22<- glmer(SubsOffspring~success+BolCirc+Weight+VillTotal+
-                   Horn+SibCount+
-                   (1|DeathYear),data=sheep,family=poisson)
-   summary(mod22)
-   mod22.2<- glmer(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
-                     (1|DeathYear),data=sheep,family=poisson)
+   mod22<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+
+                   Horn+SibCount,data=sheep,family=poisson)
+   summary(mod22) #remove SibCount
+   mod22.2<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
    summary(mod22.2)
-   mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,data=sheep,family=poisson)
-   summary(mod22.3)  #minimal model
+   
+   #same model but including interaction term
+   mod22.3<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                   Weight*VillTotal,data=sheep,family=poisson)
+   summary(mod22.3)
+   mod22.4<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+Weight*VillTotal,
+                 data=sheep,family=poisson)
+   summary(mod22.4)
    
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
@@ -884,9 +888,7 @@ str(sheep)
    summary(mod21.2) #weight least sig but keep for interaction, remove BolCirc
    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
                    Weight*VillTotal,data=sheep,family=binomial)
-   summary(mod21.3) #try removing interaction
-   mod21.4<- glm(SurvivedFirstYear~success+Weight+VillTotal,data=sheep,family=binomial)
-   summary(mod21.4)
+   summary(mod21.3) 
    #success increases survival
    #weight decreases survival
    #VillTotal decreases survival

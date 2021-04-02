@@ -146,9 +146,16 @@ View(consorts)
   summary(modB.6)
   
   #re-do modB with categorical PopType (for plotting)
-  modC<- glm(ConFirstYear~PopType+Weight+PopType*Weight,
-             data=merged,family=binomial)
+  modC<- glm(ConFirstYear~PopType*Weight,data=merged,family=binomial)
   summary(modC)
   
 # --------- PLOTTING --------
+  
+  p1<- ggplot(merged,aes(x=Weight,y=ConFirstYear))+
+    geom_point(aes(colour=PopType),size=1,alpha=0.5)+
+    theme_classic(base_size=10)+
+    geom_abline(intercept=1.65661,slope=-0.33177)+
+    geom_abline(intercept=-2.33025,slope=0.29883,colour="2")+
+    xlim(0,25)+ylim(0,1)
+  p1
   

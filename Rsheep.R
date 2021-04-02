@@ -1083,9 +1083,12 @@ str(sheep)
     median(sheep$VillTotal,na.rm=FALSE) #median pop size is 494
     
     sheep<- sheep %>%
-      mutate(PopType=case_when(VillTotal <494 ~ 0,   
-                               VillTotal >=494 ~ 1))
-    
+      mutate(PopType=case_when(VillTotal <494 ~ "0",   
+                               VillTotal >=494 ~ "1"))
+    sheep<- as.factor(sheep$PopType) #this removes all other columns for some reason
+    #try code from matt
+    sheep$PopType <- ifelse(sheep$VillTotal <494,"0", "1")
+    sheep$PopType<- as.factor(sheep$PopType) #need to include $PopType
     
 ###---------------------------------------------------------------------------------###
    
@@ -1098,19 +1101,11 @@ str(sheep)
                     Weight*PopType,data=sheep,family=binomial)
     summary(mod21.5)
     
-    #using code from hawthorn project to plot
-    table(sheep$PopType) #shows how many cases there are of high (1) and low (0) pop
     
-    #create table of coefficients to use when plotting
-    cf<- summary(mod21.5)$coefficients
-    cf
     
-    #plot in base R
-    plot(Weight~SurvivedFirstYear,data=sheep,col=as.factor(PopType))
-    
-    plot7<- ggplot(sheep,aes(Weight,SurvivedFirstYear,col=PopType))+
-      geom_point(aes(),size=1)+
-      stat_smooth(method="glm",method.args=list(family="binomial"),col="#440154FF",se=FALSE)+
+    plot7<- ggplot(sheep,aes(Weight,SurvivedFirstYear))+
+      geom_point(aes(),size=1,alpha=0.7)+
+      geom_smooth(method="lm",color=sheep$PopType)+  #R unable to find PopType
       theme_classic(base_size=10)
     plot7
     
@@ -1118,7 +1113,8 @@ str(sheep)
 ###--------------------------------------------------------------------------------###
     
     #plot for success
-    plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+
+   
+     plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+
       geom_bar(stat="identity",width=0.5)+
       labs(x="First year breeding success",y="First year survival")+
       theme_classic(base_size=10)
@@ -1263,5 +1259,18 @@ str(sheep)
     plot_mod21
     plot_mod22
     
+    
+    #roanne code for plotting two lines
+    plot2<-ggplot(data=liver4,aes(x=as.factor(pyr),y=pfaffl,group=time))+
+      geom_line(data=gd,aes(color=time))+
+      xlab("Drug dose (mg/kg)")+
+      scale_y_continuous(name="Relative expression liver parasites")+
+      guides(fill=guide_legend(title="Time of day of infection"))+  
+      theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
+            panel.background=element_blank(),axis.line=element_line(colour="black"),
+            legend.title=element_text(size=10))
+    
+    library(tidyverse)
+    gd<-liver4%>%group_by(time,pyr)%>%summarise(pfaffl=mean(pfaffl))
     
   

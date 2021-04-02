@@ -1087,9 +1087,9 @@ str(sheep)
                                VillTotal >=494 ~ "1"))
     sheep<- as.factor(sheep$PopType) #this removes all other columns for some reason
     #try code from matt
-    sheep$PopType <- ifelse(sheep$VillTotal <494,"0", "1")
+    sheep$PopType <- ifelse(sheep$VillTotal <494,"Low", "High")
     sheep$PopType<- as.factor(sheep$PopType) #need to include $PopType
-    
+    View(sheep$PopType)
 ###---------------------------------------------------------------------------------###
    
      #re-run mod21 with population as categorical
@@ -1097,17 +1097,19 @@ str(sheep)
                     Weight*VillTotal,data=sheep,family=binomial)
     summary(mod21.3)
     
-    mod21.5<- glm(SurvivedFirstYear~success+Weight+PopType+
-                    Weight*PopType,data=sheep,family=binomial)
+    mod21.5<- glm(SurvivedFirstYear~success+Weight*PopType,data=sheep,family=binomial)
     summary(mod21.5)
     
     
     
-    plot7<- ggplot(sheep,aes(Weight,SurvivedFirstYear))+
-      geom_point(aes(),size=1,alpha=0.7)+
-      geom_smooth(method="lm",color=sheep$PopType)+  #R unable to find PopType
-      theme_classic(base_size=10)
+    plot7<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
+      geom_point(aes(colour=PopType),size=1,alpha=0.5)+
+      theme_classic(base_size=10)+
+      geom_abline(intercept=-5.83800,slope=0.31145)+
+      geom_abline(intercept=-2.08938,slope=-0.16835,colour="2")+
+      xlim(0,40)+ylim(-10,1)
     plot7
+    
     
     
 ###--------------------------------------------------------------------------------###

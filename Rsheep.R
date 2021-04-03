@@ -1101,7 +1101,7 @@ str(sheep)
     summary(mod21.5)
     
     
-    
+    #line equations from coefficients
     plot7<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
       geom_point(aes(colour=PopType),size=1,alpha=0.5)+
       theme_classic(base_size=10)+
@@ -1110,20 +1110,38 @@ str(sheep)
       xlim(0,40)+ylim(-10,1)
     plot7
     
-    
-    
-###--------------------------------------------------------------------------------###
+    #using geom_smooth
+    plot7.2<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
+      geom_point((aes(colour=PopType)),size=1,alpha=0.5)+
+      theme_classic(base_size=10)+
+      geom_smooth(method="lm",aes(colour=sheep$PopType),se=FALSE)
+    plot7.2
     
     #plot for success
-   
-     plot8<- ggplot(sheep,aes(success,SurvivedFirstYear))+
-      geom_bar(stat="identity",width=0.5)+
-      labs(x="First year breeding success",y="First year survival")+
+    plot8<- ggplot(sheep,aes(x=success,y=SurvivedFirstYear))+
+      geom_point((aes()),size=1,alpha=0.5)+
+      geom_smooth(method="lm",se=FALSE)+
       theme_classic(base_size=10)
     plot8
+    s
+    sheep<- sheep %>%
+      mutate(successCat=case_when(success == 1 ~ "Yes",   
+                                 success == 0 ~ "No"))
+    str(sheep$successCat)
+    sheep$successCat<- as.factor(sheep$successCat)
+    
+     plot8.2<- ggplot(sheep,aes(x=successCat,y=SurvivedFirstYear,
+       fill=successCat))+
+       geom_bar(stat="identity",color="#737373")+
+       labs(x="First year breeding success",y="First year survival")+
+       theme_classic(base_size=10)+
+       scale_fill_manual(values=c("#8DD3C7","#BC80BD"))
+    plot8.2
+    
+    
     
     #combine plots
-    plot_mod21<- plot7+plot8
+    plot_mod21<- plot7.2+plot8.2
     plot_mod21
     
     

@@ -893,7 +893,7 @@ str(sheep)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             
-         geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.7)+                         
+         geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
          labs(x="Village Bay Population",y="First Year \nBreeding Success")+     
          theme_classic(base_size=10)+    
          stat_smooth(method="glm",method.args=list(family="binomial"),
@@ -914,35 +914,94 @@ str(sheep)
      
      #plot using ggplot2
      plot_mod10<- ggplot(sheep,aes(VillTotal,success))+                         #creates base plot
-       geom_point(aes(col=TwinStatus),size=1.5,alpha=0.7)+                                         #adds points based on twin status
+       geom_point(aes(col=TwinStatus),size=1,alpha=0.7)+                                         #adds points based on twin status
        scale_color_manual(values=c("Singleton"="#BDBDBD","Twin"="#525252"))+    #changes colour of points
        labs(x="Village Bay Population",y="First Year Breeding \nSuccess")+  #adds labels to X and Y axes
        labs(color="Twin Status")+theme_classic(base_size=10)+ 
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)
      plot_mod10      #view plot
    
-#plot mod11
+#plotting mod11
      mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
      summary(mod11.9)
      #plot VillTotal
-     p1<- ggplot(sheep,aes(VillTotal,success))+
+     plot1<- ggplot(sheep,aes(VillTotal,success))+
        geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.2)+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
        labs(x="Village Bay Population",y="First Year Breeding Success")+
        theme_classic(base_size=10)
-     p1 
+     plot1 
      #plot BolCirc
-     p2<- ggplot(sheep,aes(BolCirc,success))+
-       geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.2)+
+     plot2<- ggplot(sheep,aes(BolCirc,success))+
+       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.3)+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
-       labs(x="Testes circumference (mm)",y="First Year Breeding Success")+
+       labs(x="Testes Circumference (mm)",y="First Year Breeding Success")+
        theme_classic(base_size=10)
-     p2
+     plot2
     
      #plot side by side
-     plot_mod11<- p1 + p2
+     plot_mod11<- plot1 + plot2
      plot_mod11
    
+#plotting mod21
+     #plot mod21
+     mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
+                     Weight*VillTotal,data=sheep,family=binomial)
+     summary(mod21.3)
+     
+     #transform pop into categorical "high" or "low"
+     median(sheep$VillTotal,na.rm=FALSE) #median pop size is 494
+     
+     sheep$PopType <- ifelse(sheep$VillTotal <494,"Low", "High")
+     sheep$PopType<- as.factor(sheep$PopType) 
+     View(sheep$PopType)
+     
+     #re-run mod21 with population as categorical
+     mod21.5<- glm(SurvivedFirstYear~success+Weight*PopType,data=sheep,family=binomial)
+     summary(mod21.5)
+     
+              #line equations from coefficients
+              plot7<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
+                geom_point(aes(colour=PopType),size=1,alpha=0.5)+
+                theme_classic(base_size=10)+
+                geom_abline(intercept=-5.83800,slope=0.31145)+
+                geom_abline(intercept=-2.08938,slope=-0.16835,colour="2")+
+                xlim(0,40)+ylim(-10,1)
+              plot7
+     
+     #using geom_smooth
+     plot7.2<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
+       geom_point((aes(colour=PopType)),size=1,alpha=0.5,col="#BDBDBD")+
+       theme_classic(base_size=10)+
+       geom_smooth(method="glm",aes(colour=sheep$PopType,linetype=sheep$PopType),se=FALSE)+
+       scale_color_manual(values=c("High"="#969696","Low"="#525252"),
+                          name="Village bay \npopulation size")+
+       scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+       ylim(0,1)+
+       labs(x="August Weight (kg)",y="First Year Survival")
+     plot7.2
+     
+     #plot for success
+     plot8<- ggplot(sheep,aes(x=success,y=SurvivedFirstYear))+
+       geom_point((aes()),size=2,alpha=1,col="#BDBDBD")+
+       stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
+       labs(x="First Year Breeding Success",y="First Year Survival")+
+       theme_classic(base_size=10)
+     plot8
+     
+     #combine plots
+     plot_mod21<- plot8+plot7.2
+     plot_mod21
+     
+     
+     
+     
+     
+     
+     
+     
+     
+     
 ##plotting mod22
      mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
                      data=sheep,family=poisson)
@@ -1024,126 +1083,8 @@ str(sheep)
      
      
      
-     
-     
-     
-     
-     
-     
-   #plot mod15
-     mod15.8<- glm(DeathAge~LifetimeOffspring,data=sheep,family=poisson)
-     summary(mod15.8)
-     #plot
-     plot_mod15<- ggplot(sheep,aes(LifetimeOffspring,DeathAge))+
-       geom_point(col="#3cbb75ff",size=1)+
-       geom_smooth(method=glm,se=FALSE,col="#440154FF")+
-       labs(x="Lifetime Offspring",y="Age of Death")+
-       theme_classic(base_size=10)
-     plot_mod15
-   
-   #plot mod17
-     mod17.5<- glm(LifetimeOffspring~success+Weight+BolCirc+VillTotal,
-                   data=sheep,family=poisson)
-     summary(mod17.5)
-     #plot success
-     plot3<- ggplot(sheep,aes(success,LifetimeOffspring))+
-       geom_point()+geom_smooth(method=lm,se=FALSE,col="slateblue4")+
-       theme_classic(base_size=18)
-     plot3  #this seems wrong
-     #plot Weight
-     plot4<- ggplot(sheep,aes(Weight,LifetimeOffspring))+
-       geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
-       theme_classic(base_size=18)
-     plot4
-     #plot BolCirc
-     plot5<- ggplot(sheep,aes(BolCirc,LifetimeOffspring))+
-       geom_point(col="slateblue4")+geom_smooth(method=NULL,se=FALSE,col="steelblue1")+
-       theme_classic(base_size=18)
-     plot5
-     #plot VillTotal
-     plot6<- ggplot(sheep,aes(VillTotal,LifetimeOffspring))+
-       geom_point(col="slateblue4")+geom_smooth(method=lm,se=FALSE,col="steelblue1")+
-       theme_classic(base_size=18)
-     plot6
-     #put together into panel
-     plot_mod17<- (plot3+plot4)/(plot5+plot6)
-     plot_mod17
  
-  #plot mod21
-    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
-                 Weight*VillTotal,data=sheep,family=binomial)
-    summary(mod21.3)
-    #using geom_contour
-    ggplot(sheep,aes(x=VillTotal,y=Weight,z=SurvivedFirstYear))+
-      geom_density2d_filled(bins=20)+scale_fill_viridis(option="inferno",discrete=TRUE)+
-      labs(x="Village Bay Population",y="August Weight \n(kg)",
-      fill="First Year Survival")+theme_classic(base_size=10)
-    
-    #transform pop into categorical "high" or "low"
-    median(sheep$VillTotal,na.rm=FALSE) #median pop size is 494
-    
-    sheep<- sheep %>%
-      mutate(PopType=case_when(VillTotal <494 ~ "0",   
-                               VillTotal >=494 ~ "1"))
-    sheep<- as.factor(sheep$PopType) #this removes all other columns for some reason
-    #try code from matt
-    sheep$PopType <- ifelse(sheep$VillTotal <494,"Low", "High")
-    sheep$PopType<- as.factor(sheep$PopType) #need to include $PopType
-    View(sheep$PopType)
-###---------------------------------------------------------------------------------###
-   
-     #re-run mod21 with population as categorical
-    mod21.3<- glm(SurvivedFirstYear~success+Weight+VillTotal+
-                    Weight*VillTotal,data=sheep,family=binomial)
-    summary(mod21.3)
-    
-    mod21.5<- glm(SurvivedFirstYear~success+Weight*PopType,data=sheep,family=binomial)
-    summary(mod21.5)
-    
-    
-    #line equations from coefficients
-    plot7<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
-      geom_point(aes(colour=PopType),size=1,alpha=0.5)+
-      theme_classic(base_size=10)+
-      geom_abline(intercept=-5.83800,slope=0.31145)+
-      geom_abline(intercept=-2.08938,slope=-0.16835,colour="2")+
-      xlim(0,40)+ylim(-10,1)
-    plot7
-    
-    #using geom_smooth
-    plot7.2<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
-      geom_point((aes(colour=PopType)),size=1,alpha=0.5)+
-      theme_classic(base_size=10)+
-      geom_smooth(method="lm",aes(colour=sheep$PopType),se=FALSE)
-    plot7.2
-    
-    #plot for success
-    plot8<- ggplot(sheep,aes(x=success,y=SurvivedFirstYear))+
-      geom_point((aes()),size=1,alpha=0.5)+
-      geom_smooth(method="lm",se=FALSE)+
-      theme_classic(base_size=10)
-    plot8
-    s
-    sheep<- sheep %>%
-      mutate(successCat=case_when(success == 1 ~ "Yes",   
-                                 success == 0 ~ "No"))
-    str(sheep$successCat)
-    sheep$successCat<- as.factor(sheep$successCat)
-    
-     plot8.2<- ggplot(sheep,aes(x=successCat,y=SurvivedFirstYear,
-       fill=successCat))+
-       geom_bar(stat="identity",color="#737373")+
-       labs(x="First year breeding success",y="First year survival")+
-       theme_classic(base_size=10)+
-       scale_fill_manual(values=c("#8DD3C7","#BC80BD"))
-    plot8.2
-    
-    
-    
-    #combine plots
-    plot_mod21<- plot7.2+plot8.2
-    plot_mod21
-    
+  
     
     
     #plot_mod23
@@ -1272,12 +1213,7 @@ str(sheep)
     brewer.pal(n=8,name="Greys")
     
     
-    plot_mod9
-    plot_mod10
-    plot_mod11
-    plot_mod15
-    plot_mod21
-    plot_mod22
+    
     
     
     #roanne code for plotting two lines

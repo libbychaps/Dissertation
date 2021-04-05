@@ -854,6 +854,77 @@ str(sheep)
                  data=sheep,family=poisson)
    summary(mod22.4)
    
+   #same model but with family=quasipoisson
+   mod22.5<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                   Weight*VillTotal,data=sheep,family=quasipoisson)
+   summary(mod22.5) #remove SibCount
+   mod22.6<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+Weight*VillTotal,
+                 data=sheep,family=quasipoisson)
+   summary(mod22.6) #remove success
+   mod22.7<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+Weight*VillTotal,
+                 data=sheep,family=quasipoisson)
+   summary(mod22.7) #remove Horn
+   mod22.8<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Weight*VillTotal,
+                 data=sheep,family=quasipoisson)
+   summary(mod22.8) #remove BolCirc
+   mod22.9<- glm(SubsOffspring~Weight+VillTotal+Weight*VillTotal,data=sheep,family=quasipoisson)
+   summary(mod22.9)
+   
+   #to fix zero inflation, split into two subsets and analise separately
+      #subset for individuals having 1 or 0 subsequent offspring
+       SubsOffBinary<- sheep %>%filter(SubsOffspring <= 1)
+       View(SubsOffBinary)
+       
+      #run mod22 for binary
+       mod22.10<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffBinary,family=binomial)
+       summary(mod22.10) #remove BolCirc
+       mod22.11<- glm(SubsOffspring~success+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffBinary,family=binomial)
+       summary(mod22.11) #remove success
+       mod22.12<- glm(SubsOffspring~Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffBinary,family=binomial)
+       summary(mod22.12) #remove SibCount
+       mod22.13<- glm(SubsOffspring~Weight+VillTotal+Horn+Weight*VillTotal,
+                      data=SubsOffBinary,family=binomial)
+       summary(mod22.13) #remove horn 
+       mod22.14<- glm(SubsOffspring~Weight+VillTotal+Weight*VillTotal,
+                      data=SubsOffBinary,family=binomial)
+       summary(mod22.14) #minimal model
+       
+      #subset for individuals having 1 or more subsequent offspring
+       SubsOffCount<- sheep %>%filter(SubsOffspring >= 1)
+       View(SubsOffCount)
+       
+      #run mod22 for count data
+       hist(SubsOffCount$SubsOffspring) #poisson
+       mod22.15<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffCount,family=poisson)
+       summary(mod22.15) #remove success
+       mod22.16<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffCount,family=poisson)
+       summary(mod22.16) 
+       #but this is still overdispersed --> quasi-poisson
+       mod22.17<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffCount,family=quasipoisson)
+       summary(mod22.17) #remove success
+       mod22.18<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=SubsOffCount,family=quasipoisson)
+       summary(mod22.18) #remove SibCount
+       mod22.19<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+
+                        Weight*VillTotal,data=SubsOffCount,family=quasipoisson)
+       summary(mod22.19) #remove Horn
+       mod22.20<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Weight*VillTotal,
+                      data=SubsOffCount,family=quasipoisson)
+       summary(mod22.20) #remove BolCirc
+       mod22.21<- glm(SubsOffspring~Weight+VillTotal+Weight*VillTotal,
+                      data=SubsOffCount,family=quasipoisson)
+       summary(mod22.21) #remove interaction
+       mod22.22<- glm(SubsOffspring~Weight+VillTotal,data=SubsOffCount,family=quasipoisson)
+       summary(mod22.22) #remove VillTotal
+       mod22.23<- glm(SubsOffspring~Weight,data=SubsOffCount,family=quasipoisson)
+       summary(mod22.23)
+   
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
                  ConFirstYear+Weight*VillTotal,data=merged,family=binomial)
@@ -983,7 +1054,7 @@ str(sheep)
      
      #plot for success
      plot8<- ggplot(sheep,aes(x=success,y=SurvivedFirstYear))+
-       geom_point((aes()),size=2,alpha=1,col="#BDBDBD")+
+       geom_jitter((aes()),size=0.2,alpha=1,col="#BDBDBD",height=0.3,width=0.3)+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
        labs(x="First Year Breeding Success",y="First Year Survival")+
        theme_classic(base_size=10)
@@ -1229,4 +1300,37 @@ str(sheep)
     library(tidyverse)
     gd<-liver4%>%group_by(time,pyr)%>%summarise(pfaffl=mean(pfaffl))
     
+#------------- PLOTTING FOR PRESENTATION -------------------------
+  
+# Q1: FACTORS INFLUENCING BREEDING SUCCESS
+      # VillTotal
+      # SibCount
+      # BolCirc
+    
+    p1<- ggplot(sheep,aes(VillTotal,success))+                         
+      geom_point(aes(col=TwinStatus),size=2.3)+                                         
+      scale_color_manual(values=c("Singleton"="#FC8D62","Twin"="#8DD3C7"))+
+      labs(x="Village Bay Population",y="")+  
+      labs(color="Twin Status")+theme_classic(base_size=20)+ 
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#BC80BD",se=FALSE,size=1.2)+
+      theme(legend.position = "bottom")
+    p1
+    
+    p2<- ggplot(sheep,aes(BolCirc,success))+
+      geom_point(aes(),col="#FC8D62",size=2.3,alpha=0.2)+
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#BC80BD",se=FALSE,size=1.2)+
+      labs(x="Testes Circumference (mm)",y="First Year Breeding Success")+
+      theme_classic(base_size=20)
+    p2
+    
+    plot_Q1<- p2+p1
+    plot_Q1
+    
+# Q2: EFFECT OF BREEDING ON FUTURE
+    
+# Q3: EFFECT OF CONSORTING ON BREEDING SUCCESS
+    
+# Q4: FACTORS INFLUENCING APPEARANCE IN CONSORT
   

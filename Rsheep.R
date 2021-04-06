@@ -965,7 +965,7 @@ str(sheep)
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             
          geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
-         labs(x="Village Bay Population",y="First Year \nBreeding Success")+     
+         labs(x="Village Bay \nPopulation",y="First Year Breeding Success")+     
          theme_classic(base_size=10)+    
          stat_smooth(method="glm",method.args=list(family="binomial"),
             col="#525252",se=FALSE)
@@ -985,13 +985,47 @@ str(sheep)
      
      #plot using ggplot2
      plot_mod10<- ggplot(sheep,aes(VillTotal,success))+                         #creates base plot
-       geom_point(aes(col=TwinStatus),size=1,alpha=0.7)+                                         #adds points based on twin status
-       scale_color_manual(values=c("Singleton"="#BDBDBD","Twin"="#525252"))+    #changes colour of points
-       labs(x="Village Bay Population",y="First Year Breeding \nSuccess")+  #adds labels to X and Y axes
-       labs(color="Twin Status")+theme_classic(base_size=10)+ 
+       geom_point(aes(col=TwinStatus,alpha=TwinStatus),size=1.5)+                                         #adds points based on twin status
+       scale_color_manual(values=c("Singleton"="#BDBDBD","Twin"="#E41A1C"))+ 
+       scale_alpha_manual(values=c(0.3,1),name="Twin Status")+
+       labs(x="Village Bay Population",y="First Year Breeding Success")+  #adds labels to X and Y axes
+       labs(color="Twin Status")+theme_classic(base_size=10)+xlim(0,700)+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)
-     plot_mod10      #view plot
+     plot_mod10      
+     
+     #plot sibcount~success separately
+     #means and SE
+     Singletons<- sheep %>%
+       filter(TwinStatus=="Singleton")
+     View(Singletons)
+     meanSingletons<- mean(Singletons$success)
+     meanSingletons
+     SEsingletons<- std.error(Singletons$success)
+     SEsingletons
+     
+     Twins<- sheep %>%
+       filter(TwinStatus=="Twin")
+     View(Twins)
+     meanTwins<- mean(Twins$success)
+     meanTwins
+     SEtwins<- std.error(Twins$success)
+     SEtwins
+     
+     #make into new df
+     SibDF <- data.frame (Sibs=c("Singleton","Twin"),
+                       MeanSuccess=c(meanSingletons,meanTwins),
+                       SE=c(SEsingletons,SEtwins))
+     View(SibDF)
+     
+     plot_SibCount<- ggplot(SibDF,aes(Sibs,MeanSuccess))+
+       geom_bar(stat="identity",width=0.5,fill="#969696")+
+       theme_classic(base_size=10)+
+       labs(x="Twin Status",y="First Year Breeding Success")+
+       geom_errorbar(aes(ymin=MeanSuccess-SE,ymax=MeanSuccess+SE),width=.2,
+                     lwd=1,position=position_dodge(.9))
+     plot_SibCount
    
+     
 #plotting mod11
      mod11.9<- glm(success~VillTotal+BolCirc,data=sheep,family=binomial)
      summary(mod11.9)
@@ -1004,15 +1038,15 @@ str(sheep)
      plot1 
      #plot BolCirc
      plot2<- ggplot(sheep,aes(BolCirc,success))+
-       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.3)+
+       geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.3)+
        stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
-       labs(x="Testes Circumference (mm)",y="First Year Breeding Success")+
-       theme_classic(base_size=10)
+       labs(x="Testes Circumference \n(mm)",y="First Year Breeding Success")+
+       theme_classic(base_size=10)+xlim(0,350)
      plot2
     
-     #plot side by side
-     plot_mod11<- plot1 + plot2
-     plot_mod11
+  #SIDE BY SIDE PLOT QUESTION 1
+     plot_question1<-  plot_mod9+plot2+plot_SibCount
+     plot_question1
    
 #plotting mod21
      #plot mod21
@@ -1282,6 +1316,8 @@ str(sheep)
     brewer.pal(n=10,name="Set3")
     display.brewer.pal(n=8,name="Greys")
     brewer.pal(n=8,name="Greys")
+    display.brewer.pal(n=8,name="Set1")
+    brewer.pal(n=8,name="Set1")
     
     
     

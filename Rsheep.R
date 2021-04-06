@@ -1086,28 +1086,63 @@ str(sheep)
        labs(x="August Weight (kg)",y="First Year Survival")
      plot7.2
      
-     #plot for success
-     plot8<- ggplot(sheep,aes(x=success,y=SurvivedFirstYear))+
-       geom_jitter((aes()),size=0.2,alpha=1,col="#BDBDBD",height=0.3,width=0.3)+
-       stat_smooth(method="glm",method.args=list(family="binomial"),col="#525252",se=FALSE)+
+     
+     #bar chart for success
+     #finding means and SE
+     successYes<- sheep %>%
+       filter(success==1)
+     View(successYes)
+     meanSuccessYes<- mean(successYes$SurvivedFirstYear)
+     meanSuccessYes
+     SEsuccessYes<- std.error(successYes$SurvivedFirstYear)
+     SEsuccessYes
+     
+     successNo<- sheep %>%
+       filter(success==0)
+     View(successNo)
+     meanSuccessNo<- mean(successNo$SurvivedFirstYear)
+     meanSuccessNo
+     SEsuccessNo<- std.error(successNo$SurvivedFirstYear)
+     SEsuccessNo
+     
+     #make into new df
+     successYN <- data.frame (success=c("Yes","No"),
+                          MeanSurvival=c(meanSuccessYes,meanSuccessNo),
+                          SE=c(SEsuccessYes,SEsuccessNo))
+     View(successYN)
+     
+     plot_successbar<- ggplot(successYN,aes(success,MeanSurvival))+
+       geom_bar(stat="identity",width=0.5,fill="#969696")+
+       theme_classic(base_size=10)+
        labs(x="First Year Breeding Success",y="First Year Survival")+
-       theme_classic(base_size=10)
-     plot8
+       geom_errorbar(aes(ymin=MeanSurvival-SE,ymax=MeanSurvival+SE),width=.2,
+                     lwd=0.5,position=position_dodge(.9))
+     plot_successbar
      
      #combine plots
-     plot_mod21<- plot8+plot7.2
+     plot_mod21<- plot_successbar+plot7.2
      plot_mod21
      
      
-     
-     
-     
-     
-     
-     
-     
-     
 ##plotting mod22
+     mod22.14<- glm(SubsOffspring~Weight+VillTotal+Weight*VillTotal,
+                    data=SubsOffBinary,family=binomial)
+     summary(mod22.14)
+     
+     plot_mod22<- ggplot(SubsOffBinary,aes(x=Weight,y=SubsOffspring))+
+       geom_point((aes(colour=PopType)),size=1,alpha=0.5,col="#BDBDBD")+
+       theme_classic(base_size=10)+
+       geom_smooth(method="glm",aes(colour=PopType,linetype=PopType),se=FALSE)+
+       scale_color_manual(values=c("High"="#969696","Low"="#525252"),
+                          name="Village bay \npopulation size")+
+       scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+       ylim(0,1)+
+       labs(x="August Weight (kg)",y="Subsequent Offspring")
+     plot_mod22
+     
+     
+     
+     
      mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
                      data=sheep,family=poisson)
      summary(mod22.3)

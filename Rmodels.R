@@ -30,6 +30,9 @@
                data=sheep,family=poisson)
  summary(mod22.4)
  
+ plot_mod21
+ plot_mod22
+ 
  
 # 3. Is holding a consort associated with the success of ram lambs?
   # modA: holding a consort does not affect success in first year
@@ -43,6 +46,6 @@
  
  modB.5<- glm(ConFirstYear~VillTotal+Weight+BolCirc+Weight*VillTotal,data=merged,family=binomial)
  summary(modB.5) 
- plotA
+ p1
  
  

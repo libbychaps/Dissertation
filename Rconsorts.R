@@ -150,12 +150,16 @@ View(consorts)
   summary(modC)
   
 # --------- PLOTTING --------
-  
   p1<- ggplot(merged,aes(x=Weight,y=ConFirstYear))+
-    geom_point(aes(colour=PopType),size=1,alpha=0.5)+
+    geom_point((aes(colour=PopType)),size=1.5,alpha=0.2,col="#BDBDBD")+
     theme_classic(base_size=10)+
-    geom_abline(intercept=1.65661,slope=-0.33177)+
-    geom_abline(intercept=-2.33025,slope=0.29883,colour="2")+
-    xlim(0,25)+ylim(0,1)
+    geom_smooth(method="glm",aes(colour=PopType,linetype=PopType),se=FALSE)+
+    scale_color_manual(values=c("High"="#969696","Low"="#525252"),
+                       name="Village bay \npopulation size")+
+    scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+    ylim(0,1)+xlim(5,25)+
+    labs(x="August Weight (kg)",y="Consort in First Year")
   p1
+  
+  
   

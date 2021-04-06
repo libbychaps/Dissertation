@@ -15,6 +15,8 @@
  summary(mod11.12)
  plot_mod11
  
+ plot_question1 
+ 
 # 2. How does first year reproduction relate to future survival and reproduction?
  #SURVIVAL
   # mod24: Weight increases first year survival, population decreases survival

@@ -1022,7 +1022,7 @@ str(sheep)
        theme_classic(base_size=10)+
        labs(x="Twin Status",y="First Year Breeding Success")+
        geom_errorbar(aes(ymin=MeanSuccess-SE,ymax=MeanSuccess+SE),width=.2,
-                     lwd=1,position=position_dodge(.9))
+                     lwd=0.5,position=position_dodge(.9))
      plot_SibCount
    
      

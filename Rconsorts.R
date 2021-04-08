@@ -157,7 +157,7 @@ View(consorts)
     scale_color_manual(values=c("High"="#969696","Low"="#525252"),
                        name="Village bay \npopulation size")+
     scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
-    ylim(0,1)+xlim(5,25)+
+    ylim(0,1)+xlim(5,21)+
     labs(x="August Weight (kg)",y="Consort in First Year")
   p1
   

@@ -964,7 +964,7 @@ str(sheep)
      cor.test(sheep$success,sheep$VillTotal,method="pearson")
      #plot using ggplot2
      plot_mod9<- ggplot(sheep,aes(VillTotal,success))+             
-         geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
+         geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.3)+                         
          labs(x="Village Bay \nPopulation",y="First Year Breeding Success")+     
          theme_classic(base_size=10)+    
          stat_smooth(method="glm",method.args=list(family="binomial"),
@@ -1045,7 +1045,9 @@ str(sheep)
      plot2
     
   #SIDE BY SIDE PLOT QUESTION 1
-     plot_question1<-  plot_mod9+plot2+plot_SibCount
+     plot_question1<-  plot_mod9+plot_SibCount+plot2+
+       plot_annotation(tag_levels = 'A')&
+       theme(plot.tag = element_text(size = 8))
      plot_question1
    
 #plotting mod21
@@ -1120,7 +1122,9 @@ str(sheep)
      plot_successbar
      
      #combine plots
-     plot_mod21<- plot_successbar+plot7.2
+     plot_mod21<- plot_successbar+plot7.2+
+       plot_annotation(tag_levels = 'A')&
+       theme(plot.tag = element_text(size = 8))
      plot_mod21
      
      

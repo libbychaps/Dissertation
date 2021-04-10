@@ -925,6 +925,29 @@ str(sheep)
        mod22.23<- glm(SubsOffspring~Weight,data=SubsOffCount,family=quasipoisson)
        summary(mod22.23)
    
+       #subsoffBinary for 0 or >0 subs offspring
+       sheep<- sheep%>%
+       mutate(SubsOffBinary2 = case_when(SubsOffspring == 0 ~ 0,   
+                                         SubsOffspring >= 1 ~ 1))
+       View(sheep)
+       
+       #run mod22 for binary
+       mod22.24<- glm(SubsOffBinary2~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=sheep,family=binomial)
+       summary(mod22.24) #remove Bolcirc
+       mod22.25<- glm(SubsOffBinary2~success+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=sheep,family=binomial)
+       summary(mod22.25) #remove SibCount
+       mod22.26<- glm(SubsOffBinary2~success+Weight+VillTotal+Horn+Weight*VillTotal,
+                      data=sheep,family=binomial)
+       summary(mod22.26) #remove Horn
+       mod22.27<- glm(SubsOffBinary2~success+Weight+VillTotal+Weight*VillTotal,
+                      data=sheep,family=binomial)
+       summary(mod22.27) #remove success
+       mod22.28<- glm(SubsOffBinary2~Weight+VillTotal+Weight*VillTotal,
+                      data=sheep,family=binomial)
+       summary(mod22.28) #minimal model
+       
   #modelling survival of first year
    mod21<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
                  ConFirstYear+Weight*VillTotal,data=merged,family=binomial)

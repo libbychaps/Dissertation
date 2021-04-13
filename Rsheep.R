@@ -1156,7 +1156,7 @@ str(sheep)
                     data=SubsOffBinary,family=binomial)
      summary(mod22.14)
      
-     plot_mod22<- ggplot(SubsOffBinary,aes(x=Weight,y=SubsOffspring))+
+     plot_mod22<- ggplot(sheep,aes(x=Weight,y=SubsOffBinary2))+
        geom_point((aes(colour=PopType)),size=1,alpha=0.5,col="#BDBDBD")+
        theme_classic(base_size=10)+
        geom_smooth(method="glm",aes(colour=PopType,linetype=PopType),se=FALSE)+

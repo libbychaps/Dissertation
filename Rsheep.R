@@ -1169,76 +1169,7 @@ str(sheep)
      
      
      
-     
-     mod22.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn,
-                     data=sheep,family=poisson)
-     summary(mod22.3)
-     #plot BolCirc
-     plot9<- ggplot(sheep,aes(BolCirc,SubsOffspring))+            
-       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
-       labs(x="Testes circumference (mm)",y="Subsequent offspring")+     
-       theme_classic(base_size=10)+    
-       stat_smooth(method="glm",method.args=list(family="poisson"),
-                   col="#525252",se=FALSE) 
-     plot9
-     #plot Weight
-     plot10<- ggplot(sheep,aes(Weight,SubsOffspring))+            
-       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
-       labs(x="August weight (kg)",y="Subsequent offspring")+     
-       theme_classic(base_size=10)+    
-       stat_smooth(method="glm",method.args=list(family="poisson"),
-                   col="#525252",se=FALSE) 
-     plot10
-     #plotVillTotal
-     plot11<- ggplot(sheep,aes(VillTotal,SubsOffspring))+            
-       geom_point(aes(),col="#BDBDBD",size=1,alpha=0.7)+                         
-       labs(x="Village Bay population",y="Subsequent offspring")+     
-       theme_classic(base_size=10)+    
-       stat_smooth(method="glm",method.args=list(family="poisson"),
-                   col="#525252",se=FALSE) 
-     plot11
-     
-     #make categorical column for horn type
-     sheep<- sheep %>%
-       mutate(HornType=case_when(Horn == 3 ~ "Normal",   
-                                 Horn == 1 ~ "Scurred"))
-     #plot Horn (bar chart)
-     #finding average and SE for each horn type
-     sheepNormal<- sheep %>%
-       filter(Horn==3)
-     View(sheepNormal)
-     meanNormalSubs<- mean(sheepNormal$SubsOffspring)
-     meanNormalSubs
-     
-     SEnormal<- std.error(sheepNormal$SubsOffspring)
-     SEnormal
-     
-     sheepScurred<- sheep %>%
-       filter(Horn==1)
-     View(sheepScurred)
-     meanScurredSubs<- mean(sheepScurred$SubsOffspring)
-     meanScurredSubs
-     
-     SEscurred<- std.error(sheepScurred$SubsOffspring)
-     SEscurred
-     
-     HornMeans <- read_excel("~/University/4th Year/Dissertation/HornMeans.xlsx")
-     View(HornMeans)
-     
-     plot14<- ggplot(HornMeans,aes(HornType,MeanSubsOff,fill=HornType))+
-       geom_bar(stat="identity",width=0.5)+theme_classic(base_size=10)+
-       labs(x="Horn Type",y="Subsequent Offspring")+
-       scale_fill_manual(name="Horn Type",values=c("#BDBDBD","#737373"))+
-       geom_errorbar(aes(ymin=MeanSubsOff-SE,ymax=MeanSubsOff+SE),width=.2,
-                     lwd=1,position=position_dodge(.9))
-     plot14
-     
-     #combine plots
-     plot_mod22<- (plot9+plot10)/(plot11+plot14)
-     plot_mod22
-     
-     
-     
+  
      
      
      
@@ -1380,25 +1311,10 @@ str(sheep)
     brewer.pal(n=8,name="Greys")
     display.brewer.pal(n=8,name="Set1")
     brewer.pal(n=8,name="Set1")
+    display.brewer.pal(n=8,name="Accent")
+    brewer.pal(n=8,name="Accent")
     
-    
-    
-    
-    
-    #roanne code for plotting two lines
-    plot2<-ggplot(data=liver4,aes(x=as.factor(pyr),y=pfaffl,group=time))+
-      geom_line(data=gd,aes(color=time))+
-      xlab("Drug dose (mg/kg)")+
-      scale_y_continuous(name="Relative expression liver parasites")+
-      guides(fill=guide_legend(title="Time of day of infection"))+  
-      theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank(),
-            panel.background=element_blank(),axis.line=element_line(colour="black"),
-            legend.title=element_text(size=10))
-    
-    library(tidyverse)
-    gd<-liver4%>%group_by(time,pyr)%>%summarise(pfaffl=mean(pfaffl))
-    
-#------------- PLOTTING FOR PRESENTATION -------------------------
+  
   
 # Q1: FACTORS INFLUENCING BREEDING SUCCESS
       # VillTotal
@@ -1431,4 +1347,73 @@ str(sheep)
 # Q3: EFFECT OF CONSORTING ON BREEDING SUCCESS
     
 # Q4: FACTORS INFLUENCING APPEARANCE IN CONSORT
+    
+    
+#plots for preentation
+  #QUESTION 1
+    plot_a<- ggplot(sheep,aes(VillTotal,success))+             
+      geom_point(aes(),col="#7FC97F",size=2,alpha=0.2)+                         
+      labs(x="Village Bay Population",y="First Year Breeding Success")+     
+      theme_classic(base_size=15)+    
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#80B1D3",se=FALSE,lwd=1.5)
+    plot_a 
+    
+    plot_b<- ggplot(SibDF,aes(Sibs,MeanSuccess))+
+      geom_bar(stat="identity",width=0.5,fill="#80B1D3",alpha=0.7)+
+      theme_classic(base_size=15)+
+      labs(x="Twin Status",y="First Year Breeding Success")+
+      geom_errorbar(aes(ymin=MeanSuccess-SE,ymax=MeanSuccess+SE),width=.2,
+                    lwd=0.7,position=position_dodge(.9))
+    plot_b
+    
+    plot_c<- ggplot(sheep,aes(BolCirc,success))+
+      geom_point(aes(),col="#7FC97F",size=2,alpha=0.2)+
+      stat_smooth(method="glm",method.args=list(family="binomial"),
+                  col="#80B1D3",se=FALSE,lwd=1.5)+
+      labs(x="Testes Circumference \n(mm)",y="First Year Breeding Success")+
+      theme_classic(base_size=15)+xlim(0,350)
+    plot_c
+    
+    plot_q1_pres<- plot_a+plot_b+plot_c+
+      plot_annotation(tag_levels = 'A')&
+      theme(plot.tag = element_text(size = 8))
+    plot_q1_pres
   
+  #QUESTION 2
+    plot_d<- ggplot(sheep,aes(x=Weight,y=SurvivedFirstYear))+
+      geom_point((aes(colour=PopType)),size=2,alpha=0.2,col="#7FC97F")+
+      theme_classic(base_size=15)+
+      geom_smooth(method="glm",aes(colour=sheep$PopType,linetype=sheep$PopType),se=FALSE)+
+      scale_color_manual(values=c("High"="#377EB8","Low"="#80B1D3"),
+                         name="Village bay \npopulation size")+
+      scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+      ylim(0,1)+
+      labs(x="August Weight (kg)",y="First Year Survival")
+    plot_d
+    
+    plot_e<- ggplot(successYN,aes(success,MeanSurvival))+
+      geom_bar(stat="identity",width=0.5,fill="#80B1D3",alpha=0.7)+
+      theme_classic(base_size=15)+
+      labs(x="First Year Breeding Success",y="First Year Survival")+
+      geom_errorbar(aes(ymin=MeanSurvival-SE,ymax=MeanSurvival+SE),width=.2,
+                    lwd=0.7,position=position_dodge(.9))
+    plot_e
+    
+    plot_q2_pres<- plot_e+plot_d+
+      plot_annotation(tag_levels = 'A')&
+      theme(plot.tag = element_text(size = 8))
+    plot_q2_pres
+    
+  #QUESTION 3
+    plot_f<- ggplot(sheep,aes(x=Weight,y=SubsOffBinary2))+
+      geom_point((aes(colour=PopType)),size=2,alpha=0.2,col="#7FC97F")+
+      theme_classic(base_size=15)+
+      geom_smooth(method="glm",aes(colour=PopType,linetype=PopType),se=FALSE)+
+      scale_color_manual(values=c("High"="#377EB8","Low"="#80B1D3"),
+                         name="Village bay \npopulation size")+
+      scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+      ylim(0,1)+
+      labs(x="August Weight (kg)",y="Subsequent Offspring")
+    plot_f
+    

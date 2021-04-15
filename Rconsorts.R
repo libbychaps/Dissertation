@@ -161,5 +161,17 @@ View(consorts)
     labs(x="August Weight (kg)",y="Consort in First Year")
   p1
   
+  #plot for presentation
+  p2<- ggplot(merged,aes(x=Weight,y=ConFirstYear))+
+    geom_point((aes(colour=PopType)),size=2,alpha=0.2,col="#7FC97F")+
+    theme_classic(base_size=15)+
+    geom_smooth(method="glm",aes(colour=PopType,linetype=PopType),se=FALSE)+
+    scale_color_manual(values=c("High"="#377EB8","Low"="#80B1D3"),
+                       name="Village bay \npopulation size")+
+    scale_linetype_manual(values=c("twodash", "solid"),name="Village bay \npopulation size")+
+    ylim(0,1)+xlim(5,21)+
+    labs(x="August Weight (kg)",y="Consort in First Year")
+  p2
+  
   
   

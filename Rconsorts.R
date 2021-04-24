@@ -122,7 +122,6 @@ View(consorts)
                data=merged,family=binomial)
   summary(modA.4)
   
-
   
   
   #what predicts appearance in the rut?

@@ -33,8 +33,8 @@ str(sheep)
     #so 221 males sired offspring in their first year
 
     propsired = (221/2047)
+    propsired
     #so proportion 0.1 (or 10%) of males sired lambs in their first year
-    #is there a way of doing this more efficiently?
 
   #count data for each trait
   summary(sheep$MumID)
@@ -497,6 +497,7 @@ str(sheep)
     summary(mod9.2) #remove ratio
     mod9.3<- glm(success~VillTotal,data=sheep,family=binomial)
     summary(mod9.3)
+    
     
   #Model for horn type and twin status (binary data)
     mod10<- glm(success~SibCount+Horn+VillTotal+MumKnown+ratio,data=sheep,family=binomial)

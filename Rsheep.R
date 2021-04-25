@@ -537,6 +537,16 @@ str(sheep)
     mod11.9<- glm(success~BolCirc+VillTotal,data=sheep,family=binomial)
     summary(mod11.9)
     
+    #extra version for appendix (keep weight in)
+    mod11.10<- glm(success~Weight+BolCirc+VillTotal+Weight*VillTotal,
+                   data=sheep,family=binomial)
+    summary(mod11.10) #remove BolCirc
+    mod11.11<- glm(success~Weight+VillTotal+Weight*VillTotal,
+                   data=sheep,family=binomial)
+    summary(mod11.11)
+    mod11.12<- glm(success~Weight+VillTotal,data=sheep,family=binomial)
+    summary(mod11.12)
+    
     #repeat this model using an interaction between VillTotal and BolCirc
     mod19<- glmer(success~Weight+Horn+HornLen+HornCirc+Hindleg+BolLen+BolCirc+SibCount+VillTotal+
                     ratio+BolCirc*VillTotal+(1|BirthYear),data=sheep,family=binomial)
@@ -965,6 +975,17 @@ str(sheep)
    #success increases survival
    #weight decreases survival
    #VillTotal decreases survival
+   
+   #only include sheep data (not merged)
+   mod21.5<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+SibCount+
+                   Weight*VillTotal,data=sheep,family=binomial)
+   summary(mod21.5)
+   mod21.6<- glm(SurvivedFirstYear~success+Weight+BolCirc+VillTotal+
+                   Weight*VillTotal,data=sheep,family=binomial)
+   summary(mod21.6)
+   mod21.7<- glm(SurvivedFirstYear~success+Weight+VillTotal+Weight*VillTotal,
+                 data=sheep,family=binomial)
+   summary(mod21.7)
    
    #mod20 same as 19 but count data
    mod20<- glm(SurvivedFirstYear~CountOfFirstRutOffspring+Weight+BolCirc+VillTotal+SibCount+

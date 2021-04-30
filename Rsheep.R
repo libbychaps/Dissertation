@@ -1439,3 +1439,5 @@ str(sheep)
       labs(x="August Weight (kg)",y="Subsequent Offspring")
     plot_f
     
+    citation()
+    

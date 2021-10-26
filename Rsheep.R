@@ -20,6 +20,7 @@ library(RColorBrewer)
 library(viridis)
 library(scales)
 library(plotrix)
+library(DHARMa)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -1441,3 +1442,51 @@ str(sheep)
     
     citation()
     
+    
+    
+#----- FURTHER ANALYSIS (OCT 2021) -----
+  #-----future offspring only looking at rams that survived-----
+    
+  #create subset of data that only includes rams that survived 
+  sheepSurvived<- sheep[sheep$SurvivedFirstYear == 1,]
+  View(sheepSurvived)
+    
+  hist(sheepSurvived$SubsOffspring)
+  
+  #simplified version of hurdle model
+  
+  #STEP 1 - model looking at binary subsequent offspring
+  mod25.1<- glm(SubsOffBinary2~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                  Weight*VillTotal,data=sheepSurvived,family=binomial)
+  
+  summary(mod25.1)  #remove success
+  
+  mod25.2<- glm(SubsOffBinary2~BolCirc+Weight+VillTotal+Horn+SibCount+
+                  Weight*VillTotal,data=sheepSurvived,family=binomial)
+ 
+  summary(mod25.2)  #remove interaction
+  
+  mod25.3<- glm(SubsOffBinary2~BolCirc+Weight+VillTotal+Horn+SibCount,
+                data=sheepSurvived,family=binomial)
+
+  summary(mod25.3)  #remove Weight
+  
+  mod25.4<- glm(SubsOffBinary2~BolCirc+VillTotal+Horn+SibCount,
+                data=sheepSurvived,family=binomial)
+
+  summary(mod25.4)  #remove BolCirc
+  
+  mod25.5<- glm(SubsOffBinary2~VillTotal+Horn+SibCount,
+                data=sheepSurvived,family=binomial)
+
+  summary(mod25.5)  #remove Horn
+  
+  mod25.6<- glm(SubsOffBinary2~VillTotal+SibCount,
+                data=sheepSurvived,family=binomial)
+
+  summary(mod25.6)  #remove SibCount
+  
+  mod25.7<- glm(SubsOffBinary2~VillTotal,data=sheepSurvived,family=binomial)
+
+  summary(mod25.7)   
+  

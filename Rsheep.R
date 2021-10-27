@@ -1490,6 +1490,7 @@ str(sheep)
 
   summary(mod25.7)  #overdispersed but residual deviance/df = <2 so should be OK?
   
+  
   #STEP 2 - model all non-zero data
   
   #create df containing non-zero data only
@@ -1546,4 +1547,20 @@ str(sheep)
   
   mod27.7<- glm(SubsOffspring~Weight,data=sheepSurvivedCount,family=quasipoisson)
   summary(mod27.7)  
+  
+  #plot binary 
+  summary(mod25.7)
+  
+  #plot in base R
+  plot(SubsOffBinary2~VillTotal,data=sheepSurvived)
+  abline(lm(sheepSurvived$SubsOffBinary2~sheepSurvived$VillTotal),col="red",lwd=3)
+  cor.test(sheepSurvived$SubsOffBinary2,sheepSurvived$VillTotal,method="pearson")
+  #plot using ggplot2 
+  plot_g<- ggplot(sheepSurvived,aes(VillTotal,SubsOffBinary2))+             
+    geom_point(aes(),col="#BDBDBD",size=1.5,alpha=0.3)+                         
+    labs(x="Village Bay \nPopulation",y="Subsequent Offspring")+     
+    theme_classic(base_size=10)+    
+    stat_smooth(method="glm",method.args=list(family="binomial"),
+                col="#525252",se=FALSE)
+  plot_g #view plot
   

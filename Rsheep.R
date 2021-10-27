@@ -1488,5 +1488,62 @@ str(sheep)
   
   mod25.7<- glm(SubsOffBinary2~VillTotal,data=sheepSurvived,family=binomial)
 
-  summary(mod25.7)   
+  summary(mod25.7)  #overdispersed but residual deviance/df = <2 so should be OK?
+  
+  #STEP 2 - model all non-zero data
+  
+  #create df containing non-zero data only
+  sheepSurvivedCount<- sheepSurvived[sheepSurvived$SubsOffspring >= 1,]
+  View(sheepSurvivedCount)
+
+  #view data
+  hist(sheepSurvivedCount$SubsOffspring) #poisson
+  
+  #run model
+  mod26.1<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                   Weight*VillTotal,data=sheepSurvivedCount,family=poisson)
+
+  summary(mod26.1) #remove success
+  
+  mod26.2<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
+                   Weight*VillTotal,data=sheepSurvivedCount,family=poisson)
+
+  summary(mod26.2) #remove SibCount
+  
+  mod26.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+
+                  Weight*VillTotal,data=sheepSurvivedCount,family=poisson)
+
+  summary(mod26.3) #all significant (but very overdispersed)
+  
+  #include overdispersion term
+  mod27.1<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                  Weight*VillTotal,data=sheepSurvivedCount,family=quasipoisson)
+  
+  summary(mod27.1) #remove success
+  
+  mod27.2<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+SibCount+
+                  Weight*VillTotal,data=sheepSurvivedCount,family=quasipoisson)
+
+  summary(mod27.2) #remove SibCount
+  
+  mod27.3<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Horn+
+                  Weight*VillTotal,data=sheepSurvivedCount,family=quasipoisson)
+
+  summary(mod27.3) #remove Horn
+  
+  mod27.4<- glm(SubsOffspring~BolCirc+Weight+VillTotal+Weight*VillTotal,
+                data=sheepSurvivedCount,family=quasipoisson)
+
+  summary(mod27.4) #remove BolCirc
+  
+  mod27.5<- glm(SubsOffspring~Weight+VillTotal+Weight*VillTotal,
+                data=sheepSurvivedCount,family=quasipoisson)
+
+  summary(mod27.5) #nothing significant - remove interaction
+  
+  mod27.6<- glm(SubsOffspring~Weight+VillTotal,data=sheepSurvivedCount,family=quasipoisson)
+  summary(mod27.6)
+  
+  mod27.7<- glm(SubsOffspring~Weight,data=sheepSurvivedCount,family=quasipoisson)
+  summary(mod27.7)  
   

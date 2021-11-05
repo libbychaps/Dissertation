@@ -21,6 +21,7 @@ library(viridis)
 library(scales)
 library(plotrix)
 library(DHARMa)
+library(pscl)
 
 #import dataset
 sheep <- read_excel("~/University/4th Year/Dissertation/LibbyDataSet.xlsx")
@@ -33,6 +34,8 @@ str(sheep)
     summary(sheep$CountOfFirstRutOffspring) #shows that 1826 lambs did not sire offspring in 1st rut
     #so 221 males sired offspring in their first year
 
+    table(sheep$success)
+    
     propsired = (221/2047)
     propsired
     #so proportion 0.1 (or 10%) of males sired lambs in their first year
@@ -1450,8 +1453,31 @@ str(sheep)
   #create subset of data that only includes rams that survived 
   sheepSurvived<- sheep[sheep$SurvivedFirstYear == 1,]
   View(sheepSurvived)
-    
+  
+  str(sheep)
+  str(sheepSurvived)
+  str(sheepSurvivedCount)
+  
   hist(sheepSurvived$SubsOffspring)
+  
+      #check for zero inflation
+      modX<- glm(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+               Weight*VillTotal,data=sheepSurvived,family=poisson)
+  
+      # predict expected mean count
+      mu <- predict(modX, type = "response")
+  
+      # sum the probabilities of a 0 count for each mean
+      exp <- sum(dpois(x = 0, lambda = mu))
+  
+       # predicted number of 0's
+        round(exp) 
+        [1] 6
+  
+        # observed number of 0's
+        sum(sheepSurvived$SubsOffspring < 1)                      
+        [1] 310     
+  
   
   #simplified version of hurdle model
   
@@ -1563,4 +1589,15 @@ str(sheep)
     stat_smooth(method="glm",method.args=list(family="binomial"),
                 col="#525252",se=FALSE)
   plot_g #view plot
+  
+  
+# ----- FITTING HURDLE MODEL -----
+  #uses package "pscl"
+  mod.hurdle<- hurdle(SubsOffBinary2~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+                        Weight*VillTotal,data=sheepSurvived,
+                      dist="poisson",zero.dist="binomial")
+  
+  summary(mod.hurdle)
+  
+
   

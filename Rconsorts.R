@@ -144,6 +144,12 @@ View(consorts)
                data=merged,family=binomial)
   summary(modB.6)
   
+  modB.7<- glm(ConFirstYear~VillTotal+Weight,data=merged,family=binomial)
+  summary(modB.7)
+  
+  modB.8<- glm(ConFirstYear~VillTotal,data=merged,family=binomial)
+  summary(modB.8)
+  
   #re-do modB with categorical PopType (for plotting)
   modC<- glm(ConFirstYear~PopType*Weight,data=merged,family=binomial)
   summary(modC)

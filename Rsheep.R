@@ -1593,7 +1593,7 @@ str(sheep)
   
 # ----- FITTING HURDLE MODEL -----
   #uses package "pscl"
-  mod.hurdle<- hurdle(SubsOffBinary2~success+BolCirc+Weight+VillTotal+Horn+SibCount+
+  mod.hurdle<- hurdle(SubsOffspring~success+BolCirc+Weight+VillTotal+Horn+SibCount+
                         Weight*VillTotal,data=sheepSurvived,
                       dist="poisson",zero.dist="binomial")
   
